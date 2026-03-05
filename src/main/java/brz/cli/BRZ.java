@@ -404,9 +404,17 @@ public class BRZ {
     private static String extrairNomeClasse(String caminhoArquivo) {
         String nome = Path.of(caminhoArquivo).getFileName().toString();
         if (nome.endsWith(".brz")) nome = nome.substring(0, nome.length() - 4);
-        // Capitaliza e remove caracteres inválidos para nome de classe Java
-        nome = nome.substring(0, 1).toUpperCase() + nome.substring(1);
-        return nome.replaceAll("[^a-zA-Z0-9_]", "_");
+        // Remove caracteres inválidos para nome de classe Java
+        nome = nome.replaceAll("[^a-zA-Z0-9_]", "_");
+        // Se começa com número, prefixa com underscore
+        if (!nome.isEmpty() && Character.isDigit(nome.charAt(0))) {
+            nome = "_" + nome;
+        }
+        // Capitaliza primeira letra
+        if (!nome.isEmpty()) {
+            nome = nome.substring(0, 1).toUpperCase() + nome.substring(1);
+        }
+        return nome;
     }
 
     private static int contarCaracteres(String s, char c) {
