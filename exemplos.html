@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exemplos — BRZ Lang</title>
+  <meta name="description" content="Exemplos de codigo na linguagem BRZ. Variaveis, funcoes, classes, CRUD e mais.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">brz<span>lang</span></a>
+      <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links">
+        <li><a href="documentacao.html">Documentacao</a></li>
+        <li><a href="exemplos.html" class="active">Exemplos</a></li>
+        <li><a href="instalacao.html">Instalacao</a></li>
+        <li><a href="https://github.com/DornelassDev/brz" class="nav-cta">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="examples-hero">
+    <div class="section-label">Exemplos</div>
+    <h1 class="section-title">Codigo que fala por si.</h1>
+    <p class="section-desc">Cada exemplo abaixo e um programa BRZ completo e funcional. Copie, salve como <code>.brz</code> e execute com <code>brz rodar</code>.</p>
+  </div>
+
+  <!-- EXAMPLES -->
+  <div class="examples-grid">
+
+    <!-- 01 -->
+    <div class="example-item">
+      <div class="example-item-header">
+        <h3>Ola Mundo</h3>
+        <span>01_ola_mundo.brz</span>
+      </div>
+      <pre><code>// O programa mais simples possivel
+
+mostrar("Ola, Mundo!")
+mostrar("Bem-vindo a linguagem BRZ!")
+mostrar("Programacao em Portugues")</code></pre>
+    </div>
+
+    <!-- 02 -->
+    <div class="example-item">
+      <div class="example-item-header">
+        <h3>Variaveis e tipos</h3>
+        <span>02_variaveis.brz</span>
+      </div>
+      <pre><code>numero idade = 25
+decimal altura = 1.75
+texto nome = "Maria"
+logico ativo = verdadeiro
+caractere inicial = 'M'
+
+constante numero MAX = 100
+
+mostrar("Nome: " + nome)
+mostrar("Idade: " + idade)
+mostrar("Altura: " + altura)
+
+// Operacoes
+numero a = 10
+numero b = 3
+mostrar("Soma: " + (a + b))
+mostrar("Potencia: " + (a ** b))</code></pre>
+    </div>
+
+    <!-- 03 -->
+    <div class="example-item">
+      <div class="example-item-header">
+        <h3>Condicionais</h3>
+        <span>03_condicionais.brz</span>
+      </div>
+      <pre><code>numero nota = 85
+
+se (nota >= 90) {
+    mostrar("Nota A")
+} senao se (nota >= 80) {
+    mostrar("Nota B")
+} senao se (nota >= 70) {
+    mostrar("Nota C")
+} senao {
+    mostrar("Reprovado")
+}
+
+// Ternario
+texto status = (nota >= 60) ? "Aprovado" : "Reprovado"
+mostrar(status)
+
+// Escolha
+texto dia = "segunda"
+escolha (dia) {
+    caso "segunda": { mostrar("Inicio da semana") }
+    caso "sexta": { mostrar("Quase fim de semana") }
+    padrao: { mostrar("Dia normal") }
+}</code></pre>
+    </div>
+
+    <!-- 04 -->
+    <div class="example-item">
+      <div class="example-item-header">
+        <h3>Lacos de repeticao</h3>
+        <span>04_lacos.brz</span>
+      </div>
+      <pre><code>// Para
+para (numero i = 1; i <= 5; i++) {
+    mostrar("Contagem: " + i)
+}
+
+// Para cada
+lista texto frutas = ["maca", "banana", "laranja"]
+para cada (fruta em frutas) {
+    mostrar(fruta)
+}
+
+// Enquanto
+numero n = 5
+enquanto (n > 0) {
+    mostrar(n)
+    n -= 1
+}
+
+// Faca-enquanto
+numero x = 0
+faca {
+    x += 1
+} enquanto (x < 3)
+
+// Pare e continue
+para (numero i = 0; i < 10; i++) {
+    se (i == 3) { continue }
+    se (i == 7) { pare }
+    mostrar(i)
+}</code></pre>
+    </div>
+
+    <!-- 05 -->
+    <div class="example-item">
+      <div class="example-item-header">
+        <h3>Listas</h3>
+        <span>05_listas.brz</span>
+      </div>
+      <pre><code>lista numero numeros = [10, 20, 30, 40, 50]
+
+mostrar("Primeiro: " + numeros[0])
+mostrar("Tamanho: " + tamanho(numeros))
+
+adicionar(numeros, 60)
+remover(numeros, 30)
+
+para cada (n em numeros) {
+    mostrar(n)
+}
+
+// Somar tudo
+lista numero valores = [1, 2, 3, 4, 5]
+numero soma = 0
+para cada (v em valores) {
+    soma += v
+}
+mostrar("Soma: " + soma)</code></pre>
+    </div>
+
+    <!-- 06 -->
+    <div class="example-item">
+      <div class="example-item-header">
+        <h3>Funcoes</h3>
+        <span>06_funcoes.brz</span>
+      </div>
+      <pre><code>funcao numero somar(numero a, numero b) {
+    retorne a + b
+}
+
+funcao vazio saudar(texto nome) {
+    mostrar("Ola, " + nome + "!")
+}
+
+funcao numero fatorial(numero n) {
+    se (n <= 1) { retorne 1 }
+    retorne n * fatorial(n - 1)
+}
+
+funcao texto classificar(numero nota) {
+    se (nota >= 90) { retorne "A" }
+    se (nota >= 80) { retorne "B" }
+    se (nota >= 70) { retorne "C" }
+    retorne "F"
+}
+
+mostrar(somar(10, 20))
+saudar("Carlos")
+mostrar("5! = " + fatorial(5))
+mostrar("Nota 85: " + classificar(85))</code></pre>
+    </div>
+
+    <!-- 07 -->
+    <div class="example-item">
+      <div class="example-item-header">
+        <h3>Classes e objetos</h3>
+        <span>07_classes.brz</span>
+      </div>
+      <pre><code>classe Pessoa {
+    texto nome
+    numero idade
+
+    construtor(texto nome, numero idade) {
+        este.nome = nome
+        este.idade = idade
+    }
+
+    funcao texto apresentar() {
+        retorne "Sou " + este.nome + ", " + este.idade + " anos."
+    }
+}
+
+classe ContaBancaria {
+    texto titular
+    decimal saldo
+
+    construtor(texto titular, decimal saldoInicial) {
+        este.titular = titular
+        este.saldo = saldoInicial
+    }
+
+    funcao vazio depositar(decimal valor) {
+        este.saldo += valor
+    }
+
+    funcao logico sacar(decimal valor) {
+        se (valor > este.saldo) { retorne falso }
+        este.saldo -= valor
+        retorne verdadeiro
+    }
+}
+
+Pessoa p = novo Pessoa("Joao", 30)
+mostrar(p.apresentar())
+
+ContaBancaria c = novo ContaBancaria("Ana", 1000.0)
+c.depositar(500.0)
+c.sacar(200.0)
+mostrar("Saldo: " + c.saldo)</code></pre>
+    </div>
+
+    <!-- 08 -->
+    <div class="example-item">
+      <div class="example-item-header">
+        <h3>CRUD</h3>
+        <span>08_crud.brz</span>
+      </div>
+      <pre><code>// Sistema de produtos
+criar("Produto", {nome: "Notebook", preco: 2500.00})
+criar("Produto", {nome: "Mouse", preco: 49.90})
+criar("Produto", {nome: "Teclado", preco: 129.90})
+
+listar("Produto")
+
+atualizar("Produto", 2, {preco: 59.90})
+deletar("Produto", 3)
+
+listar("Produto")</code></pre>
+    </div>
+
+    <!-- 09 -->
+    <div class="example-item">
+      <div class="example-item-header">
+        <h3>Entrada do usuario</h3>
+        <span>09_entrada.brz</span>
+      </div>
+      <pre><code>mostrar("Qual e o seu nome?")
+texto nome = lerTexto()
+mostrar("Ola, " + nome + "!")
+
+mostrar("Quantos anos voce tem?")
+numero idade = lerNumero()
+
+se (idade >= 18) {
+    mostrar("Maior de idade.")
+} senao {
+    mostrar("Menor de idade.")
+}
+
+mostrar("Seu peso (kg):")
+decimal peso = lerDecimal()
+mostrar("Peso informado: " + peso + " kg")</code></pre>
+    </div>
+
+    <!-- 10 -->
+    <div class="example-item">
+      <div class="example-item-header">
+        <h3>Tratamento de erros</h3>
+        <span>10_erros.brz</span>
+      </div>
+      <pre><code>funcao decimal dividir(decimal a, decimal b) {
+    se (b == 0) {
+        lance("Divisao por zero!")
+    }
+    retorne a / b
+}
+
+tente {
+    decimal r = dividir(10.0, 3.0)
+    mostrar("10 / 3 = " + r)
+
+    decimal r2 = dividir(10.0, 0.0)
+    mostrar("Nunca chega aqui")
+} pegue (erro) {
+    mostrar("Erro: " + erro)
+} finalmente {
+    mostrar("Bloco finalmente executou.")
+}
+
+// Validacao
+funcao vazio validarIdade(numero idade) {
+    se (idade < 0) {
+        lance("Idade negativa!")
+    }
+}
+
+tente {
+    validarIdade(-5)
+} pegue (erro) {
+    mostrar("Validacao: " + erro)
+}</code></pre>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-brand-name">brz</div>
+        <p>Linguagem de programacao em portugues. Feita no Brasil.</p>
+      </div>
+      <div class="footer-columns">
+        <div class="footer-col">
+          <div class="footer-col-title">Produto</div>
+          <ul>
+            <li><a href="documentacao.html">Documentacao</a></li>
+            <li><a href="exemplos.html">Exemplos</a></li>
+            <li><a href="instalacao.html">Instalacao</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Ferramentas</div>
+          <ul>
+            <li><a href="#">Extensao VS Code</a></li>
+            <li><a href="#">Plugin IntelliJ</a></li>
+            <li><a href="#">Pacote npm</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Comunidade</div>
+          <ul>
+            <li><a href="https://github.com/DornelassDev/brz">GitHub</a></li>
+            <li><a href="#">Discussoes</a></li>
+            <li><a href="#">Reportar bug</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      BRZ Lang. Codigo aberto sob licenca MIT.
+    </div>
+  </footer>
+
+</body>
+</html>
