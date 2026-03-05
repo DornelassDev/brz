@@ -1,6 +1,7 @@
 package brz.generator.cpp;
 
 import brz.ast.No;
+import brz.ast.No.*;
 
 import java.util.*;
 
@@ -28,14 +29,14 @@ public class GeradorCpp implements No.Visitante<String> {
     /**
      * Gera código C++ a partir de um programa BRZ.
      */
-    public String gerar(No.Programa programa) {
+    public String gerar(Programa programa) {
         // Primeira passada: coleta funções/classes
         List<No> corpoMain = new ArrayList<>();
 
-        for (No declaracao : programa.declaracoes) {
-            if (declaracao instanceof No.DeclaracaoFuncao) {
+        for (No declaracao : programa.getDeclaracoes()) {
+            if (declaracao instanceof DeclaracaoFuncao) {
                 funcoesGlobais.add(declaracao.aceitar(this));
-            } else if (declaracao instanceof No.DeclaracaoClasse) {
+            } else if (declaracao instanceof DeclaracaoClasse) {
                 classesGeradas.add(declaracao.aceitar(this));
             } else {
                 corpoMain.add(declaracao);
@@ -113,51 +114,51 @@ public class GeradorCpp implements No.Visitante<String> {
     // ==================================================================
 
     @Override
-    public String visitarPrograma(No.Programa no) {
+    public String visitarPrograma(Programa no) {
         return gerar(no);
     }
 
     @Override
-    public String visitarDeclaracaoVariavel(No.DeclaracaoVariavel no) {
-        String tipo = mapearTipo(no.tipo);
-        if (no.valor != null) {
-            return tipo + " " + no.nome + " = " + no.valor.aceitar(this) + ";";
+    public String visitarDeclaracaoVariavel(DeclaracaoVariavel no) {
+        String tipo = mapearTipo(no.getTipo());
+        if (no.getValor() != null) {
+            return tipo + " " + no.getNome() + " = " + no.getValor().aceitar(this) + ";";
         }
-        return tipo + " " + no.nome + ";";
+        return tipo + " " + no.getNome() + ";";
     }
 
     @Override
-    public String visitarDeclaracaoConstante(No.DeclaracaoConstante no) {
-        String tipo = mapearTipo(no.tipo);
-        return "const " + tipo + " " + no.nome + " = " + no.valor.aceitar(this) + ";";
+    public String visitarDeclaracaoConstante(DeclaracaoConstante no) {
+        String tipo = mapearTipo(no.getTipo());
+        return "const " + tipo + " " + no.getNome() + " = " + no.getValor().aceitar(this) + ";";
     }
 
     @Override
-    public String visitarAtribuicao(No.Atribuicao no) {
-        return no.nome + " = " + no.valor.aceitar(this) + ";";
+    public String visitarAtribuicao(Atribuicao no) {
+        return no.getAlvo().aceitar(this) + " = " + no.getValor().aceitar(this) + ";";
     }
 
     @Override
-    public String visitarAtribuicaoComposta(No.AtribuicaoComposta no) {
-        return no.nome + " " + no.operador + " " + no.valor.aceitar(this) + ";";
+    public String visitarAtribuicaoComposta(AtribuicaoComposta no) {
+        return no.getAlvo().aceitar(this) + " " + no.getOperador() + " " + no.getValor().aceitar(this) + ";";
     }
 
     @Override
-    public String visitarBlocoSe(No.BlocoSe no) {
+    public String visitarBlocoSe(BlocoSe no) {
         StringBuilder sb = new StringBuilder();
-        sb.append("if (").append(no.condicao.aceitar(this)).append(") {\n");
+        sb.append("if (").append(no.getCondicao().aceitar(this)).append(") {\n");
         indentacao++;
-        for (No stmt : no.corpoSe) {
+        for (No stmt : no.getCorpoSe()) {
             sb.append(indent()).append(stmt.aceitar(this)).append("\n");
         }
         indentacao--;
         sb.append(indent()).append("}");
 
-        if (no.blocosSenaoSe != null) {
-            for (No.BlocoSe senaoSe : no.blocosSenaoSe) {
-                sb.append(" else if (").append(senaoSe.condicao.aceitar(this)).append(") {\n");
+        if (no.getSenaoSe() != null) {
+            for (BlocoSe senaoSe : no.getSenaoSe()) {
+                sb.append(" else if (").append(senaoSe.getCondicao().aceitar(this)).append(") {\n");
                 indentacao++;
-                for (No stmt : senaoSe.corpoSe) {
+                for (No stmt : senaoSe.getCorpoSe()) {
                     sb.append(indent()).append(stmt.aceitar(this)).append("\n");
                 }
                 indentacao--;
@@ -165,10 +166,10 @@ public class GeradorCpp implements No.Visitante<String> {
             }
         }
 
-        if (no.corpoSenao != null && !no.corpoSenao.isEmpty()) {
+        if (no.getCorpoSenao() != null && !no.getCorpoSenao().isEmpty()) {
             sb.append(" else {\n");
             indentacao++;
-            for (No stmt : no.corpoSenao) {
+            for (No stmt : no.getCorpoSenao()) {
                 sb.append(indent()).append(stmt.aceitar(this)).append("\n");
             }
             indentacao--;
@@ -178,16 +179,16 @@ public class GeradorCpp implements No.Visitante<String> {
     }
 
     @Override
-    public String visitarBlocoPara(No.BlocoPara no) {
-        String init = no.inicializacao != null ? no.inicializacao.aceitar(this) : ";";
+    public String visitarBlocoPara(BlocoPara no) {
+        String init = no.getInicializacao() != null ? no.getInicializacao().aceitar(this) : ";";
         if (init.endsWith(";")) init = init.substring(0, init.length() - 1);
-        String cond = no.condicao != null ? no.condicao.aceitar(this) : "";
-        String inc = no.incremento != null ? no.incremento.aceitar(this).replace(";", "") : "";
+        String cond = no.getCondicao() != null ? no.getCondicao().aceitar(this) : "";
+        String inc = no.getIncremento() != null ? no.getIncremento().aceitar(this).replace(";", "") : "";
 
         StringBuilder sb = new StringBuilder();
         sb.append("for (").append(init).append("; ").append(cond).append("; ").append(inc).append(") {\n");
         indentacao++;
-        for (No stmt : no.corpo) {
+        for (No stmt : no.getCorpo()) {
             sb.append(indent()).append(stmt.aceitar(this)).append("\n");
         }
         indentacao--;
@@ -196,11 +197,11 @@ public class GeradorCpp implements No.Visitante<String> {
     }
 
     @Override
-    public String visitarParaEmLista(No.ParaEmLista no) {
+    public String visitarParaEmLista(ParaEmLista no) {
         StringBuilder sb = new StringBuilder();
-        sb.append("for (auto& ").append(no.variavel).append(" : ").append(no.lista.aceitar(this)).append(") {\n");
+        sb.append("for (auto& ").append(no.getVariavel()).append(" : ").append(no.getLista().aceitar(this)).append(") {\n");
         indentacao++;
-        for (No stmt : no.corpo) {
+        for (No stmt : no.getCorpo()) {
             sb.append(indent()).append(stmt.aceitar(this)).append("\n");
         }
         indentacao--;
@@ -209,11 +210,11 @@ public class GeradorCpp implements No.Visitante<String> {
     }
 
     @Override
-    public String visitarBlocoEnquanto(No.BlocoEnquanto no) {
+    public String visitarBlocoEnquanto(BlocoEnquanto no) {
         StringBuilder sb = new StringBuilder();
-        sb.append("while (").append(no.condicao.aceitar(this)).append(") {\n");
+        sb.append("while (").append(no.getCondicao().aceitar(this)).append(") {\n");
         indentacao++;
-        for (No stmt : no.corpo) {
+        for (No stmt : no.getCorpo()) {
             sb.append(indent()).append(stmt.aceitar(this)).append("\n");
         }
         indentacao--;
@@ -222,42 +223,42 @@ public class GeradorCpp implements No.Visitante<String> {
     }
 
     @Override
-    public String visitarBlocoFacaEnquanto(No.BlocoFacaEnquanto no) {
+    public String visitarBlocoFacaEnquanto(BlocoFacaEnquanto no) {
         StringBuilder sb = new StringBuilder();
         sb.append("do {\n");
         indentacao++;
-        for (No stmt : no.corpo) {
+        for (No stmt : no.getCorpo()) {
             sb.append(indent()).append(stmt.aceitar(this)).append("\n");
         }
         indentacao--;
-        sb.append(indent()).append("} while (").append(no.condicao.aceitar(this)).append(");");
+        sb.append(indent()).append("} while (").append(no.getCondicao().aceitar(this)).append(");");
         return sb.toString();
     }
 
     @Override
-    public String visitarBlocoEscolha(No.BlocoEscolha no) {
+    public String visitarBlocoEscolha(BlocoEscolha no) {
         StringBuilder sb = new StringBuilder();
         // C++ switch requires integral/enum type; we use if-else chain for safety
-        String expr = no.expressao.aceitar(this);
+        String expr = no.getExpressao().aceitar(this);
         boolean primeiro = true;
-        for (No.BlocoEscolha.Caso caso : no.casos) {
+        for (CasoEscolha caso : no.getCasos()) {
             if (primeiro) {
-                sb.append("if (").append(expr).append(" == ").append(caso.valor.aceitar(this)).append(") {\n");
+                sb.append("if (").append(expr).append(" == ").append(caso.getValor().aceitar(this)).append(") {\n");
                 primeiro = false;
             } else {
-                sb.append(" else if (").append(expr).append(" == ").append(caso.valor.aceitar(this)).append(") {\n");
+                sb.append(" else if (").append(expr).append(" == ").append(caso.getValor().aceitar(this)).append(") {\n");
             }
             indentacao++;
-            for (No stmt : caso.corpo) {
+            for (No stmt : caso.getCorpo()) {
                 sb.append(indent()).append(stmt.aceitar(this)).append("\n");
             }
             indentacao--;
             sb.append(indent()).append("}");
         }
-        if (no.casoPadrao != null && !no.casoPadrao.isEmpty()) {
+        if (no.getCorpoPadrao() != null && !no.getCorpoPadrao().isEmpty()) {
             sb.append(" else {\n");
             indentacao++;
-            for (No stmt : no.casoPadrao) {
+            for (No stmt : no.getCorpoPadrao()) {
                 sb.append(indent()).append(stmt.aceitar(this)).append("\n");
             }
             indentacao--;
@@ -267,20 +268,20 @@ public class GeradorCpp implements No.Visitante<String> {
     }
 
     @Override
-    public String visitarDeclaracaoFuncao(No.DeclaracaoFuncao no) {
-        String tipoRetorno = mapearTipo(no.tipoRetorno);
+    public String visitarDeclaracaoFuncao(DeclaracaoFuncao no) {
+        String tipoRetorno = mapearTipo(no.getTipoRetorno());
         StringBuilder sb = new StringBuilder();
-        sb.append(tipoRetorno).append(" ").append(no.nome).append("(");
+        sb.append(tipoRetorno).append(" ").append(no.getNome()).append("(");
 
-        for (int i = 0; i < no.parametros.size(); i++) {
-            No.DeclaracaoFuncao.Parametro p = no.parametros.get(i);
-            sb.append(mapearTipo(p.tipo)).append(" ").append(p.nome);
-            if (i < no.parametros.size() - 1) sb.append(", ");
+        for (int i = 0; i < no.getParametros().size(); i++) {
+            Parametro p = no.getParametros().get(i);
+            sb.append(mapearTipo(p.getTipo())).append(" ").append(p.getNome());
+            if (i < no.getParametros().size() - 1) sb.append(", ");
         }
         sb.append(") {\n");
 
         indentacao++;
-        for (No stmt : no.corpo) {
+        for (No stmt : no.getCorpo()) {
             sb.append(indent()).append(stmt.aceitar(this)).append("\n");
         }
         indentacao--;
@@ -289,59 +290,58 @@ public class GeradorCpp implements No.Visitante<String> {
     }
 
     @Override
-    public String visitarChamadaFuncao(No.ChamadaFuncao no) {
+    public String visitarChamadaFuncao(ChamadaFuncao no) {
         StringBuilder sb = new StringBuilder();
-        sb.append(no.nome).append("(");
-        for (int i = 0; i < no.argumentos.size(); i++) {
-            sb.append(no.argumentos.get(i).aceitar(this));
-            if (i < no.argumentos.size() - 1) sb.append(", ");
+        sb.append(no.getNome()).append("(");
+        for (int i = 0; i < no.getArgumentos().size(); i++) {
+            sb.append(no.getArgumentos().get(i).aceitar(this));
+            if (i < no.getArgumentos().size() - 1) sb.append(", ");
         }
         sb.append(")");
         return sb.toString();
     }
 
     @Override
-    public String visitarRetorne(No.Retorne no) {
-        if (no.valor != null) {
-            return "return " + no.valor.aceitar(this) + ";";
+    public String visitarRetorne(Retorne no) {
+        if (no.getValor() != null) {
+            return "return " + no.getValor().aceitar(this) + ";";
         }
         return "return;";
     }
 
     @Override
-    public String visitarDeclaracaoClasse(No.DeclaracaoClasse no) {
+    public String visitarDeclaracaoClasse(DeclaracaoClasse no) {
         StringBuilder sb = new StringBuilder();
-        sb.append("class ").append(no.nome);
-        if (no.superclasse != null) {
-            sb.append(" : public ").append(no.superclasse);
+        sb.append("class ").append(no.getNome());
+        if (no.getClassePai() != null) {
+            sb.append(" : public ").append(no.getClassePai());
         }
         sb.append(" {\npublic:\n");
 
         indentacao++;
 
         // Atributos
-        for (No membro : no.membros) {
-            if (membro instanceof No.DeclaracaoVariavel) {
-                sb.append(indent()).append(membro.aceitar(this)).append("\n");
-            }
+        for (DeclaracaoVariavel attr : no.getAtributos()) {
+            sb.append(indent()).append(attr.aceitar(this)).append("\n");
         }
 
         // Construtor
-        sb.append(indent()).append(no.nome).append("(");
-        if (no.construtorParams != null) {
-            for (int i = 0; i < no.construtorParams.size(); i++) {
-                No.DeclaracaoFuncao.Parametro p = no.construtorParams.get(i);
-                sb.append(mapearTipo(p.tipo)).append(" ").append(p.nome);
-                if (i < no.construtorParams.size() - 1) sb.append(", ");
+        sb.append(indent()).append(no.getNome()).append("(");
+        if (no.getConstrutor() != null) {
+            List<Parametro> params = no.getConstrutor().getParametros();
+            for (int i = 0; i < params.size(); i++) {
+                Parametro p = params.get(i);
+                sb.append(mapearTipo(p.getTipo())).append(" ").append(p.getNome());
+                if (i < params.size() - 1) sb.append(", ");
             }
         }
         sb.append(")");
-        if (no.construtorCorpo != null && !no.construtorCorpo.isEmpty()) {
+        if (no.getConstrutor() != null && no.getConstrutor().getCorpo() != null && !no.getConstrutor().getCorpo().isEmpty()) {
             sb.append(" {\n");
             indentacao++;
-            for (No stmt : no.construtorCorpo) {
+            for (No stmt : no.getConstrutor().getCorpo()) {
                 String s = stmt.aceitar(this);
-                // Replace "this." with "this->"
+                // Replace "este." with "this->"
                 s = s.replace("este.", "this->");
                 sb.append(indent()).append(s).append("\n");
             }
@@ -352,10 +352,8 @@ public class GeradorCpp implements No.Visitante<String> {
         }
 
         // Métodos
-        for (No membro : no.membros) {
-            if (membro instanceof No.DeclaracaoFuncao) {
-                sb.append("\n").append(indent()).append(membro.aceitar(this)).append("\n");
-            }
+        for (DeclaracaoFuncao metodo : no.getMetodos()) {
+            sb.append("\n").append(indent()).append(metodo.aceitar(this)).append("\n");
         }
 
         indentacao--;
@@ -364,26 +362,38 @@ public class GeradorCpp implements No.Visitante<String> {
     }
 
     @Override
-    public String visitarNovoObjeto(No.NovoObjeto no) {
+    public String visitarNovoObjeto(NovoObjeto no) {
         StringBuilder sb = new StringBuilder();
-        sb.append(no.classe).append("(");
-        for (int i = 0; i < no.argumentos.size(); i++) {
-            sb.append(no.argumentos.get(i).aceitar(this));
-            if (i < no.argumentos.size() - 1) sb.append(", ");
+        sb.append(no.getClasse()).append("(");
+        for (int i = 0; i < no.getArgumentos().size(); i++) {
+            sb.append(no.getArgumentos().get(i).aceitar(this));
+            if (i < no.getArgumentos().size() - 1) sb.append(", ");
         }
         sb.append(")");
         return sb.toString();
     }
 
     @Override
-    public String visitarAcessoMembro(No.AcessoMembro no) {
-        return no.objeto.aceitar(this) + "." + no.membro;
+    public String visitarAcessoMembro(AcessoMembro no) {
+        String obj = no.getObjeto().aceitar(this);
+        String membro = no.getMembro();
+        if (no.isChamadaMetodo()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(obj).append(".").append(membro).append("(");
+            for (int i = 0; i < no.getArgumentos().size(); i++) {
+                if (i > 0) sb.append(", ");
+                sb.append(no.getArgumentos().get(i).aceitar(this));
+            }
+            sb.append(")");
+            return sb.toString();
+        }
+        return obj + "." + membro;
     }
 
     @Override
-    public String visitarMostrar(No.Mostrar no) {
+    public String visitarMostrar(Mostrar no) {
         StringBuilder sb = new StringBuilder("cout");
-        for (No expr : no.expressoes) {
+        for (No expr : no.getArgumentos()) {
             sb.append(" << ").append(expr.aceitar(this));
         }
         sb.append(" << endl;");
@@ -391,35 +401,44 @@ public class GeradorCpp implements No.Visitante<String> {
     }
 
     @Override
-    public String visitarLerTexto(No.LerTexto no) {
-        return "getline(cin, " + no.variavel + ")";
+    public String visitarLerTexto(LerTexto no) {
+        if (no.getPrompt() != null) {
+            return "([&]{ cout << " + no.getPrompt().aceitar(this) + "; string _s; getline(cin, _s); return _s; }())";
+        }
+        return "([&]{ string _s; getline(cin, _s); return _s; }())";
     }
 
     @Override
-    public String visitarLerNumero(No.LerNumero no) {
-        return "cin >> " + no.variavel;
+    public String visitarLerNumero(LerNumero no) {
+        if (no.getPrompt() != null) {
+            return "([&]{ cout << " + no.getPrompt().aceitar(this) + "; int _n; cin >> _n; return _n; }())";
+        }
+        return "([&]{ int _n; cin >> _n; return _n; }())";
     }
 
     @Override
-    public String visitarLerDecimal(No.LerDecimal no) {
-        return "cin >> " + no.variavel;
+    public String visitarLerDecimal(LerDecimal no) {
+        if (no.getPrompt() != null) {
+            return "([&]{ cout << " + no.getPrompt().aceitar(this) + "; double _d; cin >> _d; return _d; }())";
+        }
+        return "([&]{ double _d; cin >> _d; return _d; }())";
     }
 
     @Override
-    public String visitarDeclaracaoLista(No.DeclaracaoLista no) {
+    public String visitarDeclaracaoLista(DeclaracaoLista no) {
         includes.add("<vector>");
-        String tipoElem = no.tipoElemento != null ? mapearTipo(no.tipoElemento) : "auto";
+        String tipoElem = no.getTipoElemento() != null ? mapearTipo(no.getTipoElemento()) : "auto";
         // fallback to string if auto
         if (tipoElem.equals("auto")) tipoElem = "string";
 
         StringBuilder sb = new StringBuilder();
-        sb.append("vector<").append(tipoElem).append("> ").append(no.nome);
+        sb.append("vector<").append(tipoElem).append("> ").append(no.getNome());
 
-        if (no.elementos != null && !no.elementos.isEmpty()) {
+        if (no.getValoresIniciais() != null && !no.getValoresIniciais().isEmpty()) {
             sb.append(" = {");
-            for (int i = 0; i < no.elementos.size(); i++) {
-                sb.append(no.elementos.get(i).aceitar(this));
-                if (i < no.elementos.size() - 1) sb.append(", ");
+            for (int i = 0; i < no.getValoresIniciais().size(); i++) {
+                sb.append(no.getValoresIniciais().get(i).aceitar(this));
+                if (i < no.getValoresIniciais().size() - 1) sb.append(", ");
             }
             sb.append("}");
         }
@@ -428,48 +447,48 @@ public class GeradorCpp implements No.Visitante<String> {
     }
 
     @Override
-    public String visitarAdicionar(No.Adicionar no) {
-        return no.lista + ".push_back(" + no.valor.aceitar(this) + ");";
+    public String visitarAdicionar(Adicionar no) {
+        return no.getLista().aceitar(this) + ".push_back(" + no.getValor().aceitar(this) + ");";
     }
 
     @Override
-    public String visitarRemover(No.Remover no) {
-        includes.add("<algorithm>");
-        String val = no.valor.aceitar(this);
-        return no.lista + ".erase(remove(" + no.lista + ".begin(), " + no.lista + ".end(), " + val + "), " + no.lista + ".end());";
+    public String visitarRemover(Remover no) {
+        String lista = no.getLista().aceitar(this);
+        String indice = no.getIndice().aceitar(this);
+        return lista + ".erase(" + lista + ".begin() + " + indice + ");";
     }
 
     @Override
-    public String visitarTamanho(No.Tamanho no) {
-        return no.lista + ".size()";
+    public String visitarTamanho(Tamanho no) {
+        return no.getLista().aceitar(this) + ".size()";
     }
 
     @Override
-    public String visitarAcessoIndice(No.AcessoIndice no) {
-        return no.lista + "[" + no.indice.aceitar(this) + "]";
+    public String visitarAcessoIndice(AcessoIndice no) {
+        return no.getObjeto().aceitar(this) + "[" + no.getIndice().aceitar(this) + "]";
     }
 
     @Override
-    public String visitarBlocoTentePegue(No.BlocoTentePegue no) {
+    public String visitarBlocoTentePegue(BlocoTentePegue no) {
         includes.add("<stdexcept>");
         StringBuilder sb = new StringBuilder();
         sb.append("try {\n");
         indentacao++;
-        for (No stmt : no.corpoTente) {
+        for (No stmt : no.getCorpoTente()) {
             sb.append(indent()).append(stmt.aceitar(this)).append("\n");
         }
         indentacao--;
-        sb.append(indent()).append("} catch (const exception& ").append(no.variavelErro != null ? no.variavelErro : "e").append(") {\n");
+        sb.append(indent()).append("} catch (const exception& ").append(no.getNomeErro() != null ? no.getNomeErro() : "e").append(") {\n");
         indentacao++;
-        for (No stmt : no.corpoPegue) {
+        for (No stmt : no.getCorpoPegue()) {
             sb.append(indent()).append(stmt.aceitar(this)).append("\n");
         }
         indentacao--;
         sb.append(indent()).append("}");
 
-        if (no.corpoFinalmente != null && !no.corpoFinalmente.isEmpty()) {
+        if (no.getCorpoFinalmente() != null && !no.getCorpoFinalmente().isEmpty()) {
             sb.append("\n").append(indent()).append("// finally (executado manualmente)\n");
-            for (No stmt : no.corpoFinalmente) {
+            for (No stmt : no.getCorpoFinalmente()) {
                 sb.append(indent()).append(stmt.aceitar(this)).append("\n");
             }
         }
@@ -477,16 +496,16 @@ public class GeradorCpp implements No.Visitante<String> {
     }
 
     @Override
-    public String visitarLance(No.Lance no) {
+    public String visitarLance(Lance no) {
         includes.add("<stdexcept>");
-        return "throw runtime_error(" + no.expressao.aceitar(this) + ");";
+        return "throw runtime_error(" + no.getExpressao().aceitar(this) + ");";
     }
 
     @Override
-    public String visitarExpressaoBinaria(No.ExpressaoBinaria no) {
-        String esq = no.esquerda.aceitar(this);
-        String dir = no.direita.aceitar(this);
-        String op = no.operador;
+    public String visitarExpressaoBinaria(ExpressaoBinaria no) {
+        String esq = no.getEsquerda().aceitar(this);
+        String dir = no.getDireita().aceitar(this);
+        String op = no.getOperador();
 
         switch (op) {
             case "e": case "&&": op = "&&"; break;
@@ -501,91 +520,91 @@ public class GeradorCpp implements No.Visitante<String> {
     }
 
     @Override
-    public String visitarExpressaoUnaria(No.ExpressaoUnaria no) {
-        String operando = no.operando.aceitar(this);
-        String op = no.operador;
+    public String visitarExpressaoUnaria(ExpressaoUnaria no) {
+        String operando = no.getOperando().aceitar(this);
+        String op = no.getOperador();
         if (op.equals("nao") || op.equals("não")) op = "!";
-        if (no.prefixo) {
+        if (no.isPrefixo()) {
             return op + operando;
         }
         return operando + op;
     }
 
     @Override
-    public String visitarExpressaoTernaria(No.ExpressaoTernaria no) {
-        return "(" + no.condicao.aceitar(this) + " ? " + no.valorVerdadeiro.aceitar(this) + " : " + no.valorFalso.aceitar(this) + ")";
+    public String visitarExpressaoTernaria(ExpressaoTernaria no) {
+        return "(" + no.getCondicao().aceitar(this) + " ? " + no.getValorSe().aceitar(this) + " : " + no.getValorSenao().aceitar(this) + ")";
     }
 
     @Override
-    public String visitarLiteralNumero(No.LiteralNumero no) {
-        return String.valueOf(no.valor);
+    public String visitarLiteralInteiro(LiteralInteiro no) {
+        return String.valueOf(no.getValor());
     }
 
     @Override
-    public String visitarLiteralDecimal(No.LiteralDecimal no) {
-        return String.valueOf(no.valor);
+    public String visitarLiteralDecimal(LiteralDecimal no) {
+        return String.valueOf(no.getValor());
     }
 
     @Override
-    public String visitarLiteralTexto(No.LiteralTexto no) {
-        return "\"" + no.valor + "\"";
+    public String visitarLiteralTexto(LiteralTexto no) {
+        return "\"" + no.getValor() + "\"";
     }
 
     @Override
-    public String visitarLiteralLogico(No.LiteralLogico no) {
-        return no.valor ? "true" : "false";
+    public String visitarLiteralBooleano(LiteralBooleano no) {
+        return no.getValor() ? "true" : "false";
     }
 
     @Override
-    public String visitarLiteralNulo(No.LiteralNulo no) {
+    public String visitarLiteralNulo(LiteralNulo no) {
         return "nullptr";
     }
 
     @Override
-    public String visitarLiteralCaractere(No.LiteralCaractere no) {
-        return "'" + no.valor + "'";
+    public String visitarLiteralCaracter(LiteralCaracter no) {
+        return "'" + no.getValor() + "'";
     }
 
     @Override
-    public String visitarIdentificador(No.Identificador no) {
-        if (no.nome.equals("este")) return "this";
-        return no.nome;
+    public String visitarIdentificador(Identificador no) {
+        if (no.getNome().equals("este")) return "this";
+        return no.getNome();
     }
 
     @Override
-    public String visitarImportar(No.Importar no) {
-        return "// import: " + no.modulo;
+    public String visitarImportar(Importar no) {
+        return "// import: " + no.getModulo();
     }
 
     @Override
-    public String visitarPare(No.Pare no) {
+    public String visitarPare(Pare no) {
         return "break;";
     }
 
     @Override
-    public String visitarContinue(No.Continue no) {
+    public String visitarContinue(Continue no) {
         return "continue;";
     }
 
     @Override
-    public String visitarCrudCriar(No.CrudCriar no) {
+    public String visitarCrudCriar(CrudCriar no) {
         includes.add("<map>");
         includes.add("<any>");
-        return "// CRUD criar: " + no.entidade + " — use std::map ou banco de dados externo";
+        return "// CRUD criar: " + no.getEntidade() + " — use std::map ou banco de dados externo";
     }
 
     @Override
-    public String visitarCrudListar(No.CrudListar no) {
-        return "// CRUD listar: " + no.entidade;
+    public String visitarCrudListar(CrudListar no) {
+        return "// CRUD listar: " + no.getEntidade();
     }
 
     @Override
-    public String visitarCrudAtualizar(No.CrudAtualizar no) {
-        return "// CRUD atualizar: " + no.entidade;
+    public String visitarCrudAtualizar(CrudAtualizar no) {
+        return "// CRUD atualizar: " + no.getEntidade();
     }
 
     @Override
-    public String visitarCrudDeletar(No.CrudDeletar no) {
-        return "// CRUD deletar: " + no.entidade;
+    public String visitarCrudDeletar(CrudDeletar no) {
+        return "// CRUD deletar: " + no.getEntidade();
     }
 }
