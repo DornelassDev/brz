@@ -1,0 +1,52 @@
+{
+  "name": "brzlang",
+  "version": "1.0.0",
+  "description": "BRZ Lang — Linguagem de programação em Português. Transpila para Java, Python, C e C++.",
+  "main": "index.js",
+  "bin": {
+    "brz": "./bin/brz.js"
+  },
+  "scripts": {
+    "test": "node test/test.js",
+    "build": "cd java && mvn package -q -DskipTests",
+    "postinstall": "node scripts/postinstall.js"
+  },
+  "keywords": [
+    "brz",
+    "brzlang",
+    "português",
+    "programação",
+    "transpiler",
+    "language",
+    "java",
+    "python",
+    "c",
+    "cpp",
+    "brazilian",
+    "portuguese"
+  ],
+  "author": "BRZ Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DornelassDev/brz"
+  },
+  "homepage": "https://DornelassDev.github.io/brz/",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "files": [
+    "bin/",
+    "lib/",
+    "java/target/brz.jar",
+    "scripts/",
+    "index.js",
+    "README.md",
+    "LICENSE"
+  ]
+}

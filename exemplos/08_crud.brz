@@ -1,0 +1,35 @@
+// =============================================
+// CRUD Completo — BRZ Lang
+// =============================================
+
+mostrar("=== Sistema CRUD de Produtos ===\n")
+
+// Criar registros
+criar("Produto", {nome: "Notebook", preco: 2500.00, estoque: 10})
+criar("Produto", {nome: "Mouse", preco: 49.90, estoque: 100})
+criar("Produto", {nome: "Teclado", preco: 129.90, estoque: 50})
+criar("Produto", {nome: "Monitor", preco: 899.00, estoque: 25})
+
+mostrar("4 produtos criados!\n")
+
+// Listar todos
+mostrar("=== Listar Todos os Produtos ===")
+listar("Produto")
+
+// Atualizar registro
+mostrar("\n=== Atualizando preço do Mouse ===")
+atualizar("Produto", 2, {preco: 59.90})
+
+// Listar após atualização
+mostrar("\n=== Produtos Atualizados ===")
+listar("Produto")
+
+// Deletar registro
+mostrar("\n=== Deletando Monitor ===")
+deletar("Produto", 4)
+
+// Listar final
+mostrar("\n=== Produtos Finais ===")
+listar("Produto")
+
+mostrar("\n=== CRUD completo! ===")

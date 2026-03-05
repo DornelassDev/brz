@@ -1,0 +1,101 @@
+// =============================================
+// Classes e Objetos — BRZ Lang
+// =============================================
+
+// Classe simples
+classe Pessoa {
+    texto nome
+    numero idade
+
+    construtor(texto nome, numero idade) {
+        este.nome = nome
+        este.idade = idade
+    }
+
+    funcao texto apresentar() {
+        retorne "Olá, eu sou " + este.nome + " e tenho " + este.idade + " anos."
+    }
+
+    funcao logico ehMaiorDeIdade() {
+        retorne este.idade >= 18
+    }
+}
+
+// Criar objetos
+Pessoa p1 = novo Pessoa("João", 25)
+Pessoa p2 = novo Pessoa("Maria", 16)
+
+mostrar(p1.apresentar())
+mostrar(p2.apresentar())
+
+mostrar(p1.nome + " é maior de idade? " + p1.ehMaiorDeIdade())
+mostrar(p2.nome + " é maior de idade? " + p2.ehMaiorDeIdade())
+
+// Classe com herança
+classe Animal {
+    texto nome
+    texto som
+
+    construtor(texto nome, texto som) {
+        este.nome = nome
+        este.som = som
+    }
+
+    funcao texto falar() {
+        retorne este.nome + " faz: " + este.som
+    }
+}
+
+classe Cachorro estende Animal {
+    texto raca
+
+    construtor(texto nome, texto raca) {
+        super("Cachorro: " + nome, "Au au!")
+        este.raca = raca
+    }
+
+    funcao texto info() {
+        retorne este.nome + " | Raça: " + este.raca
+    }
+}
+
+Cachorro dog = novo Cachorro("Rex", "Pastor Alemão")
+mostrar("\n" + dog.falar())
+mostrar(dog.info())
+
+// Classe ContaBancaria
+classe ContaBancaria {
+    texto titular
+    decimal saldo
+
+    construtor(texto titular, decimal saldoInicial) {
+        este.titular = titular
+        este.saldo = saldoInicial
+    }
+
+    funcao vazio depositar(decimal valor) {
+        este.saldo += valor
+        mostrar("Depósito de R$" + valor + " realizado.")
+    }
+
+    funcao logico sacar(decimal valor) {
+        se (valor > este.saldo) {
+            mostrar("Saldo insuficiente!")
+            retorne falso
+        }
+        este.saldo -= valor
+        mostrar("Saque de R$" + valor + " realizado.")
+        retorne verdadeiro
+    }
+
+    funcao texto extrato() {
+        retorne "Titular: " + este.titular + " | Saldo: R$" + este.saldo
+    }
+}
+
+mostrar("\n=== Conta Bancária ===")
+ContaBancaria conta = novo ContaBancaria("Carlos Silva", 1000.00)
+mostrar(conta.extrato())
+conta.depositar(500.00)
+conta.sacar(200.00)
+mostrar(conta.extrato())

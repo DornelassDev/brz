@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# ==============================================================
+# BRZ Lang — Script de execução
+# Uso: ./brz <comando> [opções]
+# ==============================================================
+
+set -e
+
+# Detecta o diretório do script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BRZ_JAR="$SCRIPT_DIR/target/brz.jar"
+
+# Cores
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+# Verifica se o JAR existe
+if [ ! -f "$BRZ_JAR" ]; then
+    # Tenta encontrar em outros locais
+    if [ -f "$SCRIPT_DIR/brz.jar" ]; then
+        BRZ_JAR="$SCRIPT_DIR/brz.jar"
+    else
+        echo -e "${RED}[BRZ] JAR não encontrado. Compilando...${NC}"
+        cd "$SCRIPT_DIR"
+        if command -v mvn &> /dev/null; then
+            mvn package -q -DskipTests
+        else
+            echo -e "${RED}[BRZ] Maven não encontrado. Instale com: brew install maven${NC}"
+            echo -e "${RED}[BRZ] Ou compile manualmente: mvn package${NC}"
+            exit 1
+        fi
+        echo -e "${GREEN}[BRZ] Compilado com sucesso!${NC}"
+    fi
+fi
+
+# Verifica Java
+if ! command -v java &> /dev/null; then
+    echo -e "${RED}[BRZ] Java não encontrado. Instale o JDK 17+.${NC}"
+    exit 1
+fi
+
+# Executa o BRZ
+java -jar "$BRZ_JAR" "$@"

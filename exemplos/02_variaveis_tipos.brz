@@ -1,0 +1,42 @@
+// =============================================
+// Variáveis e Tipos — BRZ Lang
+// =============================================
+
+// Tipos básicos
+numero idade = 25
+decimal altura = 1.75
+texto nome = "Maria"
+logico ativo = verdadeiro
+caractere inicial = 'M'
+
+// Constantes
+constante numero MAX_USUARIOS = 100
+constante texto VERSAO = "1.0.0"
+
+// Mostrar valores
+mostrar("Nome: " + nome)
+mostrar("Idade: " + idade)
+mostrar("Altura: " + altura)
+mostrar("Ativo: " + ativo)
+mostrar("Inicial: " + inicial)
+mostrar("Máximo de usuários: " + MAX_USUARIOS)
+
+// Operações aritméticas
+numero a = 10
+numero b = 3
+
+mostrar("Soma: " + (a + b))
+mostrar("Subtração: " + (a - b))
+mostrar("Multiplicação: " + (a * b))
+mostrar("Divisão: " + (a / b))
+mostrar("Módulo: " + (a % b))
+mostrar("Potência: " + (a ** b))
+
+// Atribuição composta
+numero contador = 0
+contador += 5
+mostrar("Contador: " + contador)
+contador -= 2
+mostrar("Contador: " + contador)
+contador *= 3
+mostrar("Contador: " + contador)

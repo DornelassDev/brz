@@ -1,0 +1,50 @@
+// =============================================
+// Laços de Repetição — BRZ Lang
+// =============================================
+
+// Para (for clássico)
+mostrar("=== Contagem de 1 a 5 ===")
+para (numero i = 1; i <= 5; i++) {
+    mostrar("Número: " + i)
+}
+
+// Para em lista (for-each)
+mostrar("\n=== Frutas ===")
+lista texto frutas = ["maçã", "banana", "laranja", "uva"]
+para cada (fruta em frutas) {
+    mostrar("Fruta: " + fruta)
+}
+
+// Enquanto (while)
+mostrar("\n=== Countdown ===")
+numero n = 5
+enquanto (n > 0) {
+    mostrar(n + "...")
+    n -= 1
+}
+mostrar("🚀 Lançamento!")
+
+// Faça-enquanto (do-while)
+mostrar("\n=== Menu (faça-enquanto) ===")
+numero opcao = 0
+faca {
+    mostrar("1 - Jogar")
+    mostrar("2 - Opções")
+    mostrar("3 - Sair")
+    opcao = 3 // Simula escolha
+    mostrar("Opção escolhida: " + opcao)
+} enquanto (opcao != 3)
+
+// Pare e Continue
+mostrar("\n=== Pare e Continue ===")
+para (numero i = 1; i <= 10; i++) {
+    se (i == 5) {
+        mostrar("Pulando 5...")
+        continue
+    }
+    se (i == 8) {
+        mostrar("Parando em 8!")
+        pare
+    }
+    mostrar("i = " + i)
+}

@@ -1,0 +1,53 @@
+// =============================================
+// Condicionais — BRZ Lang
+// =============================================
+
+numero nota = 85
+
+// Se / Senão Se / Senão
+se (nota >= 90) {
+    mostrar("Excelente! Nota A")
+} senao se (nota >= 80) {
+    mostrar("Muito bom! Nota B")
+} senao se (nota >= 70) {
+    mostrar("Bom! Nota C")
+} senao se (nota >= 60) {
+    mostrar("Regular. Nota D")
+} senao {
+    mostrar("Reprovado. Nota F")
+}
+
+// Operadores lógicos
+numero idade = 20
+logico temCarteira = verdadeiro
+
+se (idade >= 18 e temCarteira) {
+    mostrar("Pode dirigir!")
+} senao {
+    mostrar("Não pode dirigir.")
+}
+
+// Escolha (switch)
+texto dia = "segunda"
+
+escolha (dia) {
+    caso "segunda": {
+        mostrar("Início da semana")
+    }
+    caso "sexta": {
+        mostrar("Quase fim de semana!")
+    }
+    caso "sabado": {
+        mostrar("Fim de semana! 🎉")
+    }
+    caso "domingo": {
+        mostrar("Dia de descanso")
+    }
+    padrao: {
+        mostrar("Dia normal de trabalho")
+    }
+}
+
+// Expressão ternária
+texto status = (nota >= 60) ? "Aprovado" : "Reprovado"
+mostrar("Status: " + status)

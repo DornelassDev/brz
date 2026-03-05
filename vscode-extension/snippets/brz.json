@@ -1,0 +1,245 @@
+{
+  "Mostrar": {
+    "prefix": "mostrar",
+    "body": ["mostrar(\"$1\")"],
+    "description": "Imprime mensagem no console"
+  },
+  "Variável Numero": {
+    "prefix": "numero",
+    "body": ["numero ${1:nome} = ${2:0}"],
+    "description": "Declara variável numérica"
+  },
+  "Variável Texto": {
+    "prefix": "texto",
+    "body": ["texto ${1:nome} = \"${2:valor}\""],
+    "description": "Declara variável de texto"
+  },
+  "Variável Decimal": {
+    "prefix": "decimal",
+    "body": ["decimal ${1:nome} = ${2:0.0}"],
+    "description": "Declara variável decimal"
+  },
+  "Variável Logico": {
+    "prefix": "logico",
+    "body": ["logico ${1:nome} = ${2:verdadeiro}"],
+    "description": "Declara variável lógica"
+  },
+  "Constante": {
+    "prefix": "constante",
+    "body": ["constante ${1:tipo} ${2:NOME} = ${3:valor}"],
+    "description": "Declara constante"
+  },
+  "Se": {
+    "prefix": "se",
+    "body": [
+      "se (${1:condicao}) {",
+      "    $0",
+      "}"
+    ],
+    "description": "Bloco condicional se"
+  },
+  "Se-Senao": {
+    "prefix": "sesenao",
+    "body": [
+      "se (${1:condicao}) {",
+      "    $2",
+      "} senao {",
+      "    $0",
+      "}"
+    ],
+    "description": "Bloco se/senão"
+  },
+  "Se-Senao Se-Senao": {
+    "prefix": "sesenaose",
+    "body": [
+      "se (${1:condicao1}) {",
+      "    $2",
+      "} senao se (${3:condicao2}) {",
+      "    $4",
+      "} senao {",
+      "    $0",
+      "}"
+    ],
+    "description": "Bloco se/senão se/senão"
+  },
+  "Para": {
+    "prefix": "para",
+    "body": [
+      "para (numero ${1:i} = ${2:0}; ${1:i} < ${3:10}; ${1:i}++) {",
+      "    $0",
+      "}"
+    ],
+    "description": "Laço para (for)"
+  },
+  "Para Cada": {
+    "prefix": "paracada",
+    "body": [
+      "para cada (${1:item} em ${2:lista}) {",
+      "    $0",
+      "}"
+    ],
+    "description": "Laço para cada (for-each)"
+  },
+  "Enquanto": {
+    "prefix": "enquanto",
+    "body": [
+      "enquanto (${1:condicao}) {",
+      "    $0",
+      "}"
+    ],
+    "description": "Laço enquanto (while)"
+  },
+  "Faca-Enquanto": {
+    "prefix": "facaenquanto",
+    "body": [
+      "faca {",
+      "    $0",
+      "} enquanto (${1:condicao})"
+    ],
+    "description": "Laço faça-enquanto (do-while)"
+  },
+  "Escolha": {
+    "prefix": "escolha",
+    "body": [
+      "escolha (${1:expressao}) {",
+      "    caso ${2:valor}: {",
+      "        $3",
+      "    }",
+      "    padrao: {",
+      "        $0",
+      "    }",
+      "}"
+    ],
+    "description": "Bloco escolha (switch)"
+  },
+  "Funcao": {
+    "prefix": "funcao",
+    "body": [
+      "funcao ${1:tipo} ${2:nome}(${3:params}) {",
+      "    $0",
+      "}"
+    ],
+    "description": "Declara função"
+  },
+  "Funcao Void": {
+    "prefix": "funcaovazio",
+    "body": [
+      "funcao vazio ${1:nome}(${2:params}) {",
+      "    $0",
+      "}"
+    ],
+    "description": "Declara função sem retorno"
+  },
+  "Classe": {
+    "prefix": "classe",
+    "body": [
+      "classe ${1:Nome} {",
+      "    ${2:tipo} ${3:atributo}",
+      "",
+      "    construtor(${4:params}) {",
+      "        $5",
+      "    }",
+      "",
+      "    $0",
+      "}"
+    ],
+    "description": "Declara classe"
+  },
+  "Classe com Heranca": {
+    "prefix": "classeestende",
+    "body": [
+      "classe ${1:Nome} estende ${2:SuperClasse} {",
+      "    ${3:tipo} ${4:atributo}",
+      "",
+      "    construtor(${5:params}) {",
+      "        super($6)",
+      "        $7",
+      "    }",
+      "",
+      "    $0",
+      "}"
+    ],
+    "description": "Declara classe com herança"
+  },
+  "Lista": {
+    "prefix": "lista",
+    "body": ["lista ${1:tipo} ${2:nome} = [${3:elementos}]"],
+    "description": "Declara lista"
+  },
+  "Tente-Pegue": {
+    "prefix": "tente",
+    "body": [
+      "tente {",
+      "    $1",
+      "} pegue (${2:erro}) {",
+      "    mostrar(\"Erro: \" + ${2:erro})",
+      "    $0",
+      "}"
+    ],
+    "description": "Bloco tente-pegue (try-catch)"
+  },
+  "Tente-Pegue-Finalmente": {
+    "prefix": "tentefinalmente",
+    "body": [
+      "tente {",
+      "    $1",
+      "} pegue (${2:erro}) {",
+      "    mostrar(\"Erro: \" + ${2:erro})",
+      "    $3",
+      "} finalmente {",
+      "    $0",
+      "}"
+    ],
+    "description": "Bloco tente-pegue-finalmente"
+  },
+  "Ler Texto": {
+    "prefix": "lertexto",
+    "body": ["texto ${1:nome} = lerTexto()"],
+    "description": "Lê texto do usuário"
+  },
+  "Ler Numero": {
+    "prefix": "lernumero",
+    "body": ["numero ${1:nome} = lerNumero()"],
+    "description": "Lê número do usuário"
+  },
+  "Ler Decimal": {
+    "prefix": "lerdecimal",
+    "body": ["decimal ${1:nome} = lerDecimal()"],
+    "description": "Lê decimal do usuário"
+  },
+  "CRUD Criar": {
+    "prefix": "criar",
+    "body": ["criar(\"${1:Entidade}\", {${2:campo}: ${3:valor}})"],
+    "description": "CRUD: criar registro"
+  },
+  "CRUD Listar": {
+    "prefix": "listar",
+    "body": ["listar(\"${1:Entidade}\")"],
+    "description": "CRUD: listar registros"
+  },
+  "CRUD Atualizar": {
+    "prefix": "atualizar",
+    "body": ["atualizar(\"${1:Entidade}\", ${2:id}, {${3:campo}: ${4:valor}})"],
+    "description": "CRUD: atualizar registro"
+  },
+  "CRUD Deletar": {
+    "prefix": "deletar",
+    "body": ["deletar(\"${1:Entidade}\", ${2:id})"],
+    "description": "CRUD: deletar registro"
+  },
+  "Importar": {
+    "prefix": "importar",
+    "body": ["importar ${1:modulo}"],
+    "description": "Importa módulo"
+  },
+  "Main BRZ": {
+    "prefix": "main",
+    "body": [
+      "// ${1:Nome do Programa} — BRZ Lang",
+      "",
+      "mostrar(\"$2\")",
+      "$0"
+    ],
+    "description": "Template de programa BRZ"
+  }
+}

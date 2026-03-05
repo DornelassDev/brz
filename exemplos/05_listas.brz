@@ -1,0 +1,42 @@
+// =============================================
+// Listas (Arrays) — BRZ Lang
+// =============================================
+
+// Declaração de lista
+lista numero numeros = [10, 20, 30, 40, 50]
+
+// Acessar por índice
+mostrar("Primeiro: " + numeros[0])
+mostrar("Último: " + numeros[4])
+
+// Tamanho
+mostrar("Tamanho: " + tamanho(numeros))
+
+// Adicionar elemento
+adicionar(numeros, 60)
+mostrar("Após adicionar 60: tamanho = " + tamanho(numeros))
+
+// Remover elemento
+remover(numeros, 30)
+mostrar("Após remover 30: tamanho = " + tamanho(numeros))
+
+// Percorrer lista
+mostrar("\n=== Todos os números ===")
+para cada (num em numeros) {
+    mostrar(num)
+}
+
+// Lista de textos
+lista texto cores = ["vermelho", "verde", "azul"]
+mostrar("\n=== Cores ===")
+para (numero i = 0; i < tamanho(cores); i++) {
+    mostrar(i + ": " + cores[i])
+}
+
+// Somar todos os elementos
+lista numero valores = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+numero soma = 0
+para cada (v em valores) {
+    soma += v
+}
+mostrar("\nSoma de 1 a 10: " + soma)

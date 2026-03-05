@@ -1,0 +1,25 @@
+# Build
+target/
+*.class
+*.jar
+!brz.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+package-lock.json
+
+# Temp
+*.tmp
+*.log

@@ -1,0 +1,70 @@
+// =============================================
+// Entrada do Usuário — BRZ Lang
+// =============================================
+
+// Ler texto
+mostrar("Qual é o seu nome?")
+texto nome = lerTexto()
+mostrar("Olá, " + nome + "!")
+
+// Ler número
+mostrar("\nQuantos anos você tem?")
+numero idade = lerNumero()
+
+se (idade >= 18) {
+    mostrar("Você é maior de idade!")
+} senao {
+    mostrar("Você é menor de idade.")
+    mostrar("Faltam " + (18 - idade) + " anos.")
+}
+
+// Ler decimal
+mostrar("\nQual é o seu peso (kg)?")
+decimal peso = lerDecimal()
+
+mostrar("Qual é a sua altura (m)?")
+decimal altura = lerDecimal()
+
+decimal imc = peso / (altura * altura)
+mostrar("\nSeu IMC é: " + imc)
+
+se (imc < 18.5) {
+    mostrar("Classificação: Abaixo do peso")
+} senao se (imc < 25.0) {
+    mostrar("Classificação: Peso normal")
+} senao se (imc < 30.0) {
+    mostrar("Classificação: Sobrepeso")
+} senao {
+    mostrar("Classificação: Obesidade")
+}
+
+// Calculadora interativa
+mostrar("\n=== Calculadora ===")
+mostrar("Digite o primeiro número:")
+decimal n1 = lerDecimal()
+mostrar("Digite o operador (+, -, *, /):")
+texto op = lerTexto()
+mostrar("Digite o segundo número:")
+decimal n2 = lerDecimal()
+
+escolha (op) {
+    caso "+": {
+        mostrar("Resultado: " + (n1 + n2))
+    }
+    caso "-": {
+        mostrar("Resultado: " + (n1 - n2))
+    }
+    caso "*": {
+        mostrar("Resultado: " + (n1 * n2))
+    }
+    caso "/": {
+        se (n2 != 0) {
+            mostrar("Resultado: " + (n1 / n2))
+        } senao {
+            mostrar("Erro: divisão por zero!")
+        }
+    }
+    padrao: {
+        mostrar("Operador inválido!")
+    }
+}

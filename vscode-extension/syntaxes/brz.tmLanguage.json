@@ -1,0 +1,229 @@
+{
+  "scopeName": "source.brz",
+  "name": "BRZ",
+  "fileTypes": ["brz"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#characters" },
+    { "include": "#numbers" },
+    { "include": "#keywords-control" },
+    { "include": "#keywords-declaration" },
+    { "include": "#keywords-type" },
+    { "include": "#keywords-builtin" },
+    { "include": "#keywords-crud" },
+    { "include": "#keywords-io" },
+    { "include": "#keywords-error" },
+    { "include": "#keywords-logic" },
+    { "include": "#keywords-modifier" },
+    { "include": "#constants" },
+    { "include": "#operators" },
+    { "include": "#function-call" },
+    { "include": "#class-name" },
+    { "include": "#identifiers" },
+    { "include": "#punctuation" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.brz",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.line.hash.brz",
+          "match": "#.*$"
+        },
+        {
+          "name": "comment.block.brz",
+          "begin": "/\\*",
+          "end": "\\*/",
+          "captures": {
+            "0": { "name": "punctuation.definition.comment.brz" }
+          }
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.brz",
+          "begin": "\"",
+          "end": "\"",
+          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.brz" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.string.end.brz" } },
+          "patterns": [
+            {
+              "name": "constant.character.escape.brz",
+              "match": "\\\\[nrtbf\\\\\"'0]"
+            }
+          ]
+        }
+      ]
+    },
+    "characters": {
+      "patterns": [
+        {
+          "name": "string.quoted.single.brz",
+          "match": "'(\\\\.|[^'])'"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.decimal.brz",
+          "match": "\\b[0-9]+\\.[0-9]+\\b"
+        },
+        {
+          "name": "constant.numeric.integer.brz",
+          "match": "\\b[0-9]+\\b"
+        }
+      ]
+    },
+    "keywords-control": {
+      "patterns": [
+        {
+          "name": "keyword.control.brz",
+          "match": "\\b(se|senao|senão|escolha|caso|padrao|padrão|para|cada|em|enquanto|faca|faça|pare|continue|retorne)\\b"
+        }
+      ]
+    },
+    "keywords-declaration": {
+      "patterns": [
+        {
+          "name": "keyword.declaration.brz",
+          "match": "\\b(funcao|função|classe|construtor|estende|implementa|importar|de|como|novo|constante|lista|mapa|conjunto)\\b"
+        }
+      ]
+    },
+    "keywords-type": {
+      "patterns": [
+        {
+          "name": "storage.type.brz",
+          "match": "\\b(numero|número|decimal|texto|logico|lógico|caractere|vazio|inteiro|longo|flutuante|objeto|qualquer|tipo)\\b"
+        }
+      ]
+    },
+    "keywords-builtin": {
+      "patterns": [
+        {
+          "name": "support.function.brz",
+          "match": "\\b(mostrar|tamanho|adicionar|remover|contem|ordenar|inverter|fatiar|juntar|separar|maiusculo|minusculo|substituir|aparar|formato|converter)\\b"
+        }
+      ]
+    },
+    "keywords-crud": {
+      "patterns": [
+        {
+          "name": "keyword.other.crud.brz",
+          "match": "\\b(criar|listar|atualizar|deletar)\\b"
+        }
+      ]
+    },
+    "keywords-io": {
+      "patterns": [
+        {
+          "name": "support.function.io.brz",
+          "match": "\\b(lerTexto|lerNumero|lerNúmero|lerDecimal|lerLogico|lerLógico)\\b"
+        }
+      ]
+    },
+    "keywords-error": {
+      "patterns": [
+        {
+          "name": "keyword.control.error.brz",
+          "match": "\\b(tente|pegue|finalmente|lance|lançar)\\b"
+        }
+      ]
+    },
+    "keywords-logic": {
+      "patterns": [
+        {
+          "name": "keyword.operator.logical.brz",
+          "match": "\\b(e|ou|nao|não)\\b"
+        }
+      ]
+    },
+    "keywords-modifier": {
+      "patterns": [
+        {
+          "name": "storage.modifier.brz",
+          "match": "\\b(publico|público|privado|protegido|estatico|estático|final|abstrato|super|este)\\b"
+        }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        {
+          "name": "constant.language.brz",
+          "match": "\\b(verdadeiro|falso|nulo)\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.comparison.brz",
+          "match": "(==|!=|<=|>=|<|>)"
+        },
+        {
+          "name": "keyword.operator.assignment.brz",
+          "match": "(\\+=|-=|\\*=|/=|%=|=)"
+        },
+        {
+          "name": "keyword.operator.arithmetic.brz",
+          "match": "(\\+\\+|--|\\*\\*|\\+|-|\\*|/|%)"
+        },
+        {
+          "name": "keyword.operator.ternary.brz",
+          "match": "[?:]"
+        }
+      ]
+    },
+    "function-call": {
+      "patterns": [
+        {
+          "name": "entity.name.function.brz",
+          "match": "\\b([a-zA-ZÀ-ÿ_][a-zA-ZÀ-ÿ0-9_]*)\\s*(?=\\()"
+        }
+      ]
+    },
+    "class-name": {
+      "patterns": [
+        {
+          "name": "entity.name.type.class.brz",
+          "match": "\\b(classe|estende|novo)\\s+([A-ZÀ-Ÿ][a-zA-ZÀ-ÿ0-9_]*)",
+          "captures": {
+            "1": { "name": "keyword.declaration.brz" },
+            "2": { "name": "entity.name.type.class.brz" }
+          }
+        }
+      ]
+    },
+    "identifiers": {
+      "patterns": [
+        {
+          "name": "variable.other.brz",
+          "match": "\\b[a-zA-ZÀ-ÿ_][a-zA-ZÀ-ÿ0-9_]*\\b"
+        }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.bracket.brz",
+          "match": "[{}\\[\\]()]"
+        },
+        {
+          "name": "punctuation.separator.brz",
+          "match": "[,;]"
+        },
+        {
+          "name": "punctuation.accessor.brz",
+          "match": "\\."
+        }
+      ]
+    }
+  }
+}

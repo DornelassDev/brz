@@ -1,0 +1,7 @@
+// =============================================
+// Olá Mundo — Primeiro programa em BRZ
+// =============================================
+
+mostrar("Olá, Mundo!")
+mostrar("Bem-vindo à linguagem BRZ!")
+mostrar("Programação em Português 🇧🇷")

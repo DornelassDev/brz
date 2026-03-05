@@ -1,0 +1,62 @@
+// =============================================
+// Funções — BRZ Lang
+// =============================================
+
+// Função simples
+funcao saudacao() {
+    mostrar("Olá! Seja bem-vindo ao BRZ!")
+}
+saudacao()
+
+// Função com parâmetros
+funcao saudar(texto nome) {
+    mostrar("Olá, " + nome + "!")
+}
+saudar("Carlos")
+saudar("Ana")
+
+// Função com retorno
+funcao numero somar(numero a, numero b) {
+    retorne a + b
+}
+numero resultado = somar(10, 20)
+mostrar("10 + 20 = " + resultado)
+
+// Função com múltiplos parâmetros
+funcao decimal calcularIMC(decimal peso, decimal altura) {
+    retorne peso / (altura * altura)
+}
+decimal imc = calcularIMC(70.0, 1.75)
+mostrar("IMC: " + imc)
+
+// Função recursiva (fatorial)
+funcao numero fatorial(numero n) {
+    se (n <= 1) {
+        retorne 1
+    }
+    retorne n * fatorial(n - 1)
+}
+mostrar("5! = " + fatorial(5))
+mostrar("10! = " + fatorial(10))
+
+// Função recursiva (Fibonacci)
+funcao numero fibonacci(numero n) {
+    se (n <= 0) { retorne 0 }
+    se (n == 1) { retorne 1 }
+    retorne fibonacci(n - 1) + fibonacci(n - 2)
+}
+mostrar("\n=== Fibonacci ===")
+para (numero i = 0; i < 10; i++) {
+    mostrar("fib(" + i + ") = " + fibonacci(i))
+}
+
+// Função que retorna texto
+funcao texto classificarNota(numero nota) {
+    se (nota >= 90) { retorne "A" }
+    se (nota >= 80) { retorne "B" }
+    se (nota >= 70) { retorne "C" }
+    se (nota >= 60) { retorne "D" }
+    retorne "F"
+}
+mostrar("\nNota 85 = " + classificarNota(85))
+mostrar("Nota 42 = " + classificarNota(42))

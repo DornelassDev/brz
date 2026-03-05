@@ -1,0 +1,98 @@
+{
+  "name": "brz-lang",
+  "displayName": "BRZ Lang",
+  "description": "Suporte para a linguagem BRZ — Programação em Português",
+  "version": "1.0.0",
+  "publisher": "brzlang",
+  "icon": "images/brz-icon.png",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Formatters"
+  ],
+  "keywords": [
+    "brz",
+    "português",
+    "brazilian",
+    "programming",
+    "transpiler"
+  ],
+  "activationEvents": [
+    "onLanguage:brz"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "brz",
+        "aliases": ["BRZ", "brz", "BRZ Lang"],
+        "extensions": [".brz"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "brz",
+        "scopeName": "source.brz",
+        "path": "./syntaxes/brz.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "brz",
+        "path": "./snippets/brz.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "brz.rodar",
+        "title": "BRZ: Executar Arquivo",
+        "icon": "$(play)"
+      },
+      {
+        "command": "brz.compilar",
+        "title": "BRZ: Compilar Arquivo"
+      },
+      {
+        "command": "brz.verificar",
+        "title": "BRZ: Verificar Erros"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "brz.rodar",
+          "when": "editorLangId == brz",
+          "group": "navigation"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "brz.rodar",
+        "key": "f5",
+        "when": "editorLangId == brz"
+      },
+      {
+        "command": "brz.compilar",
+        "key": "ctrl+shift+b",
+        "when": "editorLangId == brz"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "echo 'Ready to publish'",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^2.22.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DornelassDev/brz"
+  },
+  "license": "MIT"
+}

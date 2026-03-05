@@ -1,0 +1,70 @@
+// =============================================
+// Tratamento de Erros — BRZ Lang
+// =============================================
+
+// Tente-pegue básico
+mostrar("=== Tratamento de Erros ===\n")
+
+tente {
+    numero resultado = 10 / 0
+    mostrar("Resultado: " + resultado)
+} pegue (erro) {
+    mostrar("Erro capturado: " + erro)
+}
+
+// Tente-pegue-finalmente
+mostrar("\n=== Com Finalmente ===")
+tente {
+    mostrar("Abrindo conexão...")
+    lance("Falha na conexão com o servidor!")
+} pegue (erro) {
+    mostrar("Erro: " + erro)
+} finalmente {
+    mostrar("Conexão fechada (finalmente executou).")
+}
+
+// Função que lança erro
+funcao decimal dividir(decimal a, decimal b) {
+    se (b == 0) {
+        lance("Divisão por zero não é permitida!")
+    }
+    retorne a / b
+}
+
+mostrar("\n=== Função com Erro ===")
+tente {
+    decimal r1 = dividir(10.0, 3.0)
+    mostrar("10 / 3 = " + r1)
+
+    decimal r2 = dividir(10.0, 0.0)
+    mostrar("10 / 0 = " + r2)
+} pegue (erro) {
+    mostrar("Erro na divisão: " + erro)
+}
+
+// Validação com erros
+funcao vazio validarIdade(numero idade) {
+    se (idade < 0) {
+        lance("Idade não pode ser negativa!")
+    }
+    se (idade > 150) {
+        lance("Idade inválida: muito alta!")
+    }
+    mostrar("Idade " + idade + " é válida.")
+}
+
+mostrar("\n=== Validação ===")
+tente {
+    validarIdade(25)
+    validarIdade(-5)
+} pegue (erro) {
+    mostrar("Erro de validação: " + erro)
+}
+
+tente {
+    validarIdade(200)
+} pegue (erro) {
+    mostrar("Erro de validação: " + erro)
+}
+
+mostrar("\n=== Fim do programa ===")

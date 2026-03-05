@@ -1,0 +1,132 @@
+// =============================================
+// Programa Completo — Sistema de Notas BRZ
+// Demonstra TODAS as funcionalidades da linguagem
+// =============================================
+
+// === Classe Aluno ===
+classe Aluno {
+    texto nome
+    numero matricula
+    lista decimal notas
+
+    construtor(texto nome, numero matricula) {
+        este.nome = nome
+        este.matricula = matricula
+        este.notas = []
+    }
+
+    funcao vazio adicionarNota(decimal nota) {
+        se (nota < 0 ou nota > 10) {
+            lance("Nota deve estar entre 0 e 10!")
+        }
+        adicionar(este.notas, nota)
+    }
+
+    funcao decimal calcularMedia() {
+        se (tamanho(este.notas) == 0) {
+            retorne 0.0
+        }
+        decimal soma = 0.0
+        para cada (n em este.notas) {
+            soma += n
+        }
+        retorne soma / tamanho(este.notas)
+    }
+
+    funcao texto situacao() {
+        decimal media = este.calcularMedia()
+        se (media >= 7.0) { retorne "Aprovado" }
+        se (media >= 5.0) { retorne "Recuperação" }
+        retorne "Reprovado"
+    }
+
+    funcao texto relatorio() {
+        retorne "Aluno: " + este.nome + " | Mat: " + este.matricula + " | Média: " + este.calcularMedia() + " | " + este.situacao()
+    }
+}
+
+// === Classe Turma ===
+classe Turma {
+    texto disciplina
+    lista Aluno alunos
+
+    construtor(texto disciplina) {
+        este.disciplina = disciplina
+        este.alunos = []
+    }
+
+    funcao vazio matricular(Aluno aluno) {
+        adicionar(este.alunos, aluno)
+        mostrar("✓ " + aluno.nome + " matriculado em " + este.disciplina)
+    }
+
+    funcao vazio exibirRelatorio() {
+        mostrar("\n══════════════════════════════════════")
+        mostrar("   RELATÓRIO: " + este.disciplina)
+        mostrar("══════════════════════════════════════")
+        para cada (aluno em este.alunos) {
+            mostrar(aluno.relatorio())
+        }
+        mostrar("══════════════════════════════════════\n")
+    }
+}
+
+// === Funções auxiliares ===
+funcao texto formatarNota(decimal nota) {
+    se (nota >= 9.0) { retorne "★★★★★" }
+    se (nota >= 7.0) { retorne "★★★★☆" }
+    se (nota >= 5.0) { retorne "★★★☆☆" }
+    se (nota >= 3.0) { retorne "★★☆☆☆" }
+    retorne "★☆☆☆☆"
+}
+
+// === Programa Principal ===
+mostrar("🎓 Sistema de Gestão de Notas — BRZ Lang\n")
+
+// Criar turma
+Turma turma = novo Turma("Programação BRZ")
+
+// Criar alunos
+Aluno a1 = novo Aluno("Ana Silva", 1001)
+Aluno a2 = novo Aluno("Bruno Costa", 1002)
+Aluno a3 = novo Aluno("Carla Santos", 1003)
+Aluno a4 = novo Aluno("Daniel Lima", 1004)
+
+// Matricular
+turma.matricular(a1)
+turma.matricular(a2)
+turma.matricular(a3)
+turma.matricular(a4)
+
+// Adicionar notas com tratamento de erro
+tente {
+    a1.adicionarNota(8.5)
+    a1.adicionarNota(9.0)
+    a1.adicionarNota(7.5)
+
+    a2.adicionarNota(6.0)
+    a2.adicionarNota(5.5)
+    a2.adicionarNota(7.0)
+
+    a3.adicionarNota(3.0)
+    a3.adicionarNota(4.5)
+    a3.adicionarNota(2.0)
+
+    a4.adicionarNota(9.5)
+    a4.adicionarNota(10.0)
+    a4.adicionarNota(9.0)
+} pegue (erro) {
+    mostrar("Erro ao adicionar nota: " + erro)
+}
+
+// Exibir relatório
+turma.exibirRelatorio()
+
+// Estatísticas
+mostrar("=== Estrelas por Aluno ===")
+mostrar(a1.nome + ": " + formatarNota(a1.calcularMedia()))
+mostrar(a2.nome + ": " + formatarNota(a2.calcularMedia()))
+mostrar(a3.nome + ": " + formatarNota(a3.calcularMedia()))
+mostrar(a4.nome + ": " + formatarNota(a4.calcularMedia()))
+
+mostrar("\n✅ Sistema BRZ funcionando perfeitamente!")
