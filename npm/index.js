@@ -16,14 +16,9 @@ class BRZLang {
     }
 
     _findJar() {
-        const locations = [
-            path.join(__dirname, 'java', 'target', 'brz.jar'),
-            path.join(__dirname, 'lib', 'brz.jar'),
-        ];
-        for (const loc of locations) {
-            if (fs.existsSync(loc)) return loc;
-        }
-        throw new Error('[BRZ] JAR não encontrado. Execute: npm run build');
+        const loc = path.join(__dirname, 'lib', 'brz.jar');
+        if (fs.existsSync(loc)) return loc;
+        throw new Error('[BRZ] JAR não encontrado.');
     }
 
     /**

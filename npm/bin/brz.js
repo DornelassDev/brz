@@ -1,45 +1,44 @@
 #!/usr/bin/env node
 
-/**
- * BRZ Lang — CLI via npm
- * 
- * Instalação: npm install -g brzlang
- * Uso: brz rodar arquivo.brz
- */
-
-const { spawn } = require('child_process');
+const { spawn, execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-const JAR_PATH = path.join(__dirname, '..', 'java', 'target', 'brz.jar');
-const JAR_LOCAL = path.join(__dirname, '..', 'lib', 'brz.jar');
+const JAR = path.join(__dirname, '..', 'lib', 'brz.jar');
 
-function findJar() {
-    if (fs.existsSync(JAR_PATH)) return JAR_PATH;
-    if (fs.existsSync(JAR_LOCAL)) return JAR_LOCAL;
-    
-    console.error('\x1b[31m[BRZ] JAR não encontrado.\x1b[0m');
-    console.error('Execute: npm run build');
+// Verifica se o JAR existe
+if (!fs.existsSync(JAR)) {
+    console.error('\x1b[31m[BRZ] Erro interno: brz.jar não encontrado.\x1b[0m');
     process.exit(1);
 }
 
-function checkJava() {
-    try {
-        const result = require('child_process').execSync('java -version 2>&1', { encoding: 'utf-8' });
-        return true;
-    } catch (e) {
-        console.error('\x1b[31m[BRZ] Java não encontrado. Instale o JDK 17+.\x1b[0m');
-        process.exit(1);
-    }
+// Verifica se Java está instalado
+try {
+    execSync('java -version', { stdio: 'pipe' });
+} catch (e) {
+    console.error('\x1b[31m[BRZ] Java não encontrado.\x1b[0m');
+    console.error('BRZ precisa do Java 17+ instalado.');
+    console.error('');
+    console.error('  macOS:   brew install openjdk@17');
+    console.error('  Ubuntu:  sudo apt install openjdk-17-jdk');
+    console.error('  Windows: https://adoptium.net/');
+    process.exit(1);
 }
 
-checkJava();
-const jarPath = findJar();
-const args = process.argv.slice(2);
+let args = process.argv.slice(2);
 
-const proc = spawn('java', ['-jar', jarPath, ...args], {
-    stdio: 'inherit',
-    env: { ...process.env }
+// Sem argumentos → abre o console (REPL)
+if (args.length === 0) {
+    args = ['console'];
+}
+
+// Se o primeiro argumento é um arquivo .brz, assume "rodar"
+if (args.length >= 1 && args[0].endsWith('.brz') && fs.existsSync(args[0])) {
+    args = ['rodar', ...args];
+}
+
+const proc = spawn('java', ['-jar', JAR, ...args], {
+    stdio: 'inherit'
 });
 
 proc.on('close', (code) => {

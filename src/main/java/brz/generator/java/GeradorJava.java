@@ -98,6 +98,10 @@ public class GeradorJava implements No.Visitante<String> {
         // Scanner como campo estático (se necessário)
         if (precisaScanner) {
             resultado.append("    private static Scanner _scanner = new Scanner(System.in);\n\n");
+            resultado.append("    private static String _lerTexto(String prompt) {\n");
+            resultado.append("        System.out.print(prompt);\n");
+            resultado.append("        return _scanner.nextLine();\n");
+            resultado.append("    }\n\n");
         }
 
         // Métodos estáticos (funções top-level)
@@ -508,7 +512,7 @@ public class GeradorJava implements No.Visitante<String> {
     public String visitarLerTexto(LerTexto no) {
         precisaScanner = true;
         if (no.getPrompt() != null) {
-            return "(System.out.print(" + no.getPrompt().aceitar(this) + ") == null ? \"\" : \"\") + _scanner.nextLine()";
+            return "_lerTexto(" + no.getPrompt().aceitar(this) + ")";
         }
         return "_scanner.nextLine()";
     }
@@ -517,7 +521,7 @@ public class GeradorJava implements No.Visitante<String> {
     public String visitarLerNumero(LerNumero no) {
         precisaScanner = true;
         if (no.getPrompt() != null) {
-            return "Integer.parseInt((System.out.print(" + no.getPrompt().aceitar(this) + ") == null ? \"\" : \"\") + _scanner.nextLine())";
+            return "Integer.parseInt(_lerTexto(" + no.getPrompt().aceitar(this) + "))";
         }
         return "Integer.parseInt(_scanner.nextLine())";
     }
@@ -526,7 +530,7 @@ public class GeradorJava implements No.Visitante<String> {
     public String visitarLerDecimal(LerDecimal no) {
         precisaScanner = true;
         if (no.getPrompt() != null) {
-            return "Double.parseDouble((System.out.print(" + no.getPrompt().aceitar(this) + ") == null ? \"\" : \"\") + _scanner.nextLine())";
+            return "Double.parseDouble(_lerTexto(" + no.getPrompt().aceitar(this) + "))";
         }
         return "Double.parseDouble(_scanner.nextLine())";
     }
@@ -639,6 +643,14 @@ public class GeradorJava implements No.Visitante<String> {
         // Potência: a ** b → Math.pow(a, b)
         if (op.equals("**")) {
             return "Math.pow(" + no.getEsquerda().aceitar(this) + ", " + no.getDireita().aceitar(this) + ")";
+        }
+
+        // Igualdade/desigualdade: usa Objects.equals pra funcionar com Strings
+        if (op.equals("==")) {
+            return "java.util.Objects.equals(" + no.getEsquerda().aceitar(this) + ", " + no.getDireita().aceitar(this) + ")";
+        }
+        if (op.equals("!=")) {
+            return "!java.util.Objects.equals(" + no.getEsquerda().aceitar(this) + ", " + no.getDireita().aceitar(this) + ")";
         }
 
         return "(" + no.getEsquerda().aceitar(this) + " " + op + " " + no.getDireita().aceitar(this) + ")";

@@ -45,12 +45,22 @@ public class BRZ {
 
     public static void main(String[] args) {
         if (args.length == 0) {
-            mostrarBanner();
-            mostrarAjuda();
+            console();
             return;
         }
 
         String comando = args[0].toLowerCase();
+
+        // brz -c 'mostrar("ola")'
+        if (comando.equals("-c") && args.length >= 2) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 1; i < args.length; i++) {
+                if (i > 1) sb.append(" ");
+                sb.append(args[i]);
+            }
+            executarInline(sb.toString());
+            return;
+        }
 
         switch (comando) {
             case "rodar":
@@ -259,68 +269,167 @@ public class BRZ {
     }
 
     /**
-     * REPL interativo — console BRZ.
+     * Executa código BRZ inline (flag -c).
+     */
+    private static void executarInline(String codigo) {
+        try {
+            Lexer lexer = new Lexer(codigo, "<inline>");
+            List<Token> tokens = lexer.tokenizar();
+            if (lexer.temErros()) {
+                for (String e : lexer.getErros()) erro(e);
+                return;
+            }
+
+            Parser parser = new Parser(tokens, "<inline>");
+            No.Programa programa = parser.parsear();
+            if (parser.temErros()) {
+                for (String e : parser.getErros()) erro(e);
+                return;
+            }
+
+            GeradorJava gerador = new GeradorJava();
+            String java = gerador.gerar(programa, "BrzInline");
+
+            Path tmpDir = Files.createTempDirectory("brz_");
+            Path javaFile = tmpDir.resolve("BrzInline.java");
+            Files.writeString(javaFile, java);
+
+            ProcessBuilder pbCompile = new ProcessBuilder("javac", javaFile.toString());
+            pbCompile.directory(tmpDir.toFile());
+            pbCompile.redirectErrorStream(true);
+            Process compile = pbCompile.start();
+            compile.waitFor();
+
+            if (compile.exitValue() != 0) {
+                erro("Erro na compilação.");
+                limparTemp(tmpDir);
+                return;
+            }
+
+            ProcessBuilder pbRun = new ProcessBuilder("java", "-cp", tmpDir.toString(), "BrzInline");
+            pbRun.inheritIO();
+            Process run = pbRun.start();
+            run.waitFor();
+
+            limparTemp(tmpDir);
+        } catch (Exception e) {
+            erro(e.getMessage());
+        }
+    }
+
+    /**
+     * REPL interativo — terminal BRZ.
+     * Funciona como o IRB do Ruby ou o shell do Python.
      */
     private static void console() {
         mostrarBanner();
-        info("Modo interativo. Digite 'sair' para sair.\n");
+        System.out.println("  Digite código BRZ e pressione Enter para executar.");
+        System.out.println("  Comandos: " + VERDE + "sair" + RESET + "  " + VERDE + "limpar" + RESET + "  " + VERDE + "ajuda" + RESET);
+        System.out.println();
 
         Scanner scanner = new Scanner(System.in);
         StringBuilder buffer = new StringBuilder();
         int contadorChaves = 0;
 
         while (true) {
-            System.out.print(contadorChaves > 0 ? "... " : "brz> ");
+            System.out.print(VERDE + NEGRITO + "brz" + RESET + AZUL + "> " + RESET);
             if (!scanner.hasNextLine()) break;
 
             String linha = scanner.nextLine();
+            String trimmed = linha.trim();
 
-            if (linha.trim().equals("sair") || linha.trim().equals("exit")) {
-                info("Até mais! 👋");
+            if (trimmed.equals("sair") || trimmed.equals("exit") || trimmed.equals("quit")) {
+                System.out.println("\nAté mais!");
                 break;
             }
 
-            if (linha.trim().equals("limpar") || linha.trim().equals("clear")) {
+            if (trimmed.equals("limpar") || trimmed.equals("clear")) {
                 System.out.print("\033[H\033[2J");
                 System.out.flush();
                 continue;
             }
 
+            if (trimmed.equals("ajuda") || trimmed.equals("help")) {
+                mostrarAjuda();
+                continue;
+            }
+
+            if (trimmed.isEmpty()) continue;
+
             buffer.append(linha).append("\n");
             contadorChaves += contarCaracteres(linha, '{') - contarCaracteres(linha, '}');
 
-            if (contadorChaves <= 0) {
-                contadorChaves = 0;
-                try {
-                    String codigo = buffer.toString();
-                    buffer.setLength(0);
+            if (contadorChaves > 0) {
+                System.out.print(AZUL + "...  " + RESET);
+                continue;
+            }
 
-                    Lexer lexer = new Lexer(codigo, "<console>");
-                    List<Token> tokens = lexer.tokenizar();
-                    if (lexer.temErros()) {
-                        for (String e : lexer.getErros()) erro(e);
-                        continue;
-                    }
+            contadorChaves = 0;
+            String codigo = buffer.toString();
+            buffer.setLength(0);
 
-                    Parser parser = new Parser(tokens, "<console>");
-                    No.Programa programa = parser.parsear();
-                    if (parser.temErros()) {
-                        for (String e : parser.getErros()) erro(e);
-                        continue;
-                    }
-
-                    // Mostra código Java gerado
-                    GeradorJava gerador = new GeradorJava();
-                    String java = gerador.gerar(programa, "Console");
-                    System.out.println(CIANO + "// Java gerado:" + RESET);
-                    System.out.println(java);
-
-                } catch (Exception e) {
-                    erro(e.getMessage());
+            try {
+                Lexer lexer = new Lexer(codigo, "<console>");
+                List<Token> tokens = lexer.tokenizar();
+                if (lexer.temErros()) {
+                    for (String e : lexer.getErros()) erro(e);
+                    continue;
                 }
+
+                Parser parser = new Parser(tokens, "<console>");
+                No.Programa programa = parser.parsear();
+                if (parser.temErros()) {
+                    for (String e : parser.getErros()) erro(e);
+                    continue;
+                }
+
+                GeradorJava gerador = new GeradorJava();
+                String java = gerador.gerar(programa, "BrzConsole");
+
+                // Compila e executa o código
+                Path tmpDir = Files.createTempDirectory("brz_repl_");
+                Path javaFile = tmpDir.resolve("BrzConsole.java");
+                Files.writeString(javaFile, java);
+
+                ProcessBuilder pbCompile = new ProcessBuilder("javac", javaFile.toString());
+                pbCompile.directory(tmpDir.toFile());
+                pbCompile.redirectErrorStream(true);
+                Process compile = pbCompile.start();
+                String compileOutput = new String(compile.getInputStream().readAllBytes());
+                compile.waitFor();
+
+                if (compile.exitValue() != 0) {
+                    erro("Erro de compilação");
+                    if (!compileOutput.isBlank()) System.err.println(compileOutput);
+                    limparTemp(tmpDir);
+                    continue;
+                }
+
+                ProcessBuilder pbRun = new ProcessBuilder("java", "-cp", tmpDir.toString(), "BrzConsole");
+                pbRun.inheritIO();
+                Process run = pbRun.start();
+                run.waitFor();
+
+                limparTemp(tmpDir);
+
+            } catch (Exception e) {
+                erro(e.getMessage());
             }
         }
         scanner.close();
+    }
+
+    /**
+     * Limpa diretório temporário.
+     */
+    private static void limparTemp(Path dir) {
+        try {
+            Files.walk(dir)
+                .sorted(java.util.Comparator.reverseOrder())
+                .forEach(p -> {
+                    try { Files.deleteIfExists(p); } catch (IOException ignored) {}
+                });
+        } catch (IOException ignored) {}
     }
 
     /**
@@ -453,10 +562,11 @@ public class BRZ {
         System.out.println("  " + VERDE + "ajuda" + RESET + "                                      Mostra esta mensagem");
         System.out.println();
         System.out.println(NEGRITO + "EXEMPLOS:" + RESET);
+        System.out.println("  brz                                      Abre o terminal interativo");
         System.out.println("  brz rodar meuPrograma.brz");
+        System.out.println("  brz -c 'mostrar(\"ola mundo\")'");
         System.out.println("  brz compilar meuCrud.brz --para python");
         System.out.println("  brz novo projeto MeuApp");
-        System.out.println("  brz console");
         System.out.println();
     }
 
