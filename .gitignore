@@ -4,6 +4,11 @@ target/
 *.jar
 !brz.jar
 
+# VM build artifacts
+vm/build/
+vm/bin/
+npm/bin/brz-native
+
 # IDE
 .idea/
 *.iml

@@ -653,6 +653,11 @@ public class GeradorJava implements No.Visitante<String> {
             return "!java.util.Objects.equals(" + no.getEsquerda().aceitar(this) + ", " + no.getDireita().aceitar(this) + ")";
         }
 
+        // Divisão: cast pra double pra evitar divisão inteira
+        if (op.equals("/")) {
+            return "((double)" + no.getEsquerda().aceitar(this) + " / " + no.getDireita().aceitar(this) + ")";
+        }
+
         return "(" + no.getEsquerda().aceitar(this) + " " + op + " " + no.getDireita().aceitar(this) + ")";
     }
 

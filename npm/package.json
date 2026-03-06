@@ -1,22 +1,23 @@
 {
   "name": "brzlang",
-  "version": "1.0.0",
-  "description": "BRZ — Linguagem de programação em Português. Transpila para Java, Python, C e C++.",
+  "version": "2.0.0",
+  "description": "BRZ — Linguagem de programação em Português. VM nativa, zero dependências.",
   "main": "index.js",
   "bin": {
     "brz": "./bin/brz.js"
+  },
+  "scripts": {
+    "postinstall": "node scripts/build.js"
   },
   "keywords": [
     "brz",
     "brzlang",
     "portugues",
     "programacao",
-    "transpiler",
     "language",
-    "java",
-    "python",
-    "c",
-    "cpp"
+    "vm",
+    "compiler",
+    "native"
   ],
   "author": "DornelassDev",
   "license": "MIT",
@@ -30,12 +31,12 @@
   },
   "os": [
     "darwin",
-    "linux",
-    "win32"
+    "linux"
   ],
   "files": [
     "bin/",
-    "lib/",
+    "scripts/",
+    "vm/",
     "index.js",
     "README.md"
   ]

@@ -1,0 +1,24 @@
+// calculadora.brz — Calculadora interativa
+
+mostrar("=== Calculadora BRZ ===")
+
+var a = lerNumero("Digite o primeiro número: ")
+var b = lerNumero("Digite o segundo número: ")
+var op = lerTexto("Operação (+, -, *, /): ")
+
+se (op == "+") {
+    mostrar(a + " + " + b + " = " + (a + b))
+}
+se (op == "-") {
+    mostrar(a + " - " + b + " = " + (a - b))
+}
+se (op == "*") {
+    mostrar(a + " * " + b + " = " + (a * b))
+}
+se (op == "/") {
+    se (b == 0) {
+        mostrar("Erro: divisão por zero!")
+    } senao {
+        mostrar(a + " / " + b + " = " + (a / b))
+    }
+}
