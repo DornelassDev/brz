@@ -241,7 +241,7 @@ static BrzTokenType identifier_type(void) {
             if (len > 1) {
                 switch (scanner.start[1]) {
                     case 'm': return (len == 2) ? TOKEN_EM : TOKEN_IDENTIFIER;
-                    case 'n': return check_keyword(2, 7, "quanto", TOKEN_ENQUANTO);
+                    case 'n': return check_keyword(2, 6, "quanto", TOKEN_ENQUANTO);
                     case 's':
                         if (len > 2 && scanner.start[2] == 'c')
                             return check_keyword(3, 4, "olha", TOKEN_ESCOLHA);

@@ -1,0 +1,763 @@
+// ============================================================
+//  BRZ-AI: Assistente Inteligente em BRZ
+//  Um chatbot com memoria, calculadora, piadas e mais!
+// ============================================================
+
+// --- Memoria do usuario ---
+classe Memoria {
+    iniciar() {
+        este.nome = ""
+        este.idade = ""
+        este.cor = ""
+        este.comida = ""
+        este.cidade = ""
+        este.sonho = ""
+        este.gostos = []
+        este.contadorMsg = 0
+        este.humor = "neutro"
+    }
+
+    lembrar(chave, valor) {
+        se (chave == "nome") { este.nome = valor }
+        se (chave == "idade") { este.idade = valor }
+        se (chave == "cor") { este.cor = valor }
+        se (chave == "comida") { este.comida = valor }
+        se (chave == "cidade") { este.cidade = valor }
+        se (chave == "sonho") { este.sonho = valor }
+        se (chave == "humor") { este.humor = valor }
+    }
+
+    temNome() {
+        retornar este.nome != ""
+    }
+
+    registrarMsg(msg) {
+        este.contadorMsg = este.contadorMsg + 1
+    }
+
+    resumo() {
+        var r = "=== O que eu sei sobre voce ===\n"
+        se (este.nome != "") { r = r + "  Nome: " + este.nome + "\n" }
+        se (este.idade != "") { r = r + "  Idade: " + este.idade + "\n" }
+        se (este.cor != "") { r = r + "  Cor favorita: " + este.cor + "\n" }
+        se (este.comida != "") { r = r + "  Comida favorita: " + este.comida + "\n" }
+        se (este.cidade != "") { r = r + "  Cidade: " + este.cidade + "\n" }
+        se (este.sonho != "") { r = r + "  Sonho: " + este.sonho + "\n" }
+        se (este.contadorMsg > 0) { r = r + "  Mensagens trocadas: " + este.contadorMsg + "\n" }
+        se (tamanho(este.gostos) > 0) {
+            r = r + "  Coisas que voce gosta: " + juntar(este.gostos, ", ") + "\n"
+        }
+        retornar r
+    }
+}
+
+// --- Personalidade - respostas variadas ---
+classe Personalidade {
+    iniciar() {
+        este.dummy = 0
+    }
+
+    emoji() {
+        var n = inteiro(aleatorio() * 5)
+        se (n == 0) { retornar " :)" }
+        se (n == 1) { retornar " :D" }
+        se (n == 2) { retornar " ;)" }
+        se (n == 3) { retornar " :P" }
+        retornar " \\o/"
+    }
+
+    risada() {
+        var n = inteiro(aleatorio() * 5)
+        se (n == 0) { retornar "kkkkk" }
+        se (n == 1) { retornar "hahaha" }
+        se (n == 2) { retornar "rsrsrs" }
+        se (n == 3) { retornar "KKKK" }
+        retornar "hauahua"
+    }
+
+    saudacao() {
+        var n = inteiro(aleatorio() * 5)
+        se (n == 0) { retornar "E ai! " }
+        se (n == 1) { retornar "Opa! " }
+        se (n == 2) { retornar "Fala! " }
+        se (n == 3) { retornar "Salve! " }
+        retornar "Eae! "
+    }
+
+    despedida() {
+        var n = inteiro(aleatorio() * 5)
+        se (n == 0) { retornar "Falou! Ate mais!" }
+        se (n == 1) { retornar "Valeu! Ate a proxima!" }
+        se (n == 2) { retornar "Flw! Foi bom tc contigo!" }
+        se (n == 3) { retornar "Ate logo! Volte sempre!" }
+        retornar "Tchau! Cuida-se!"
+    }
+
+    concordar() {
+        var n = inteiro(aleatorio() * 5)
+        se (n == 0) { retornar "Com certeza!" }
+        se (n == 1) { retornar "Concordo total!" }
+        se (n == 2) { retornar "Isso mesmo!" }
+        se (n == 3) { retornar "Exatamente!" }
+        retornar "Demais!"
+    }
+
+    pensativo() {
+        var n = inteiro(aleatorio() * 4)
+        se (n == 0) { retornar "Hmm, deixa eu pensar... " }
+        se (n == 1) { retornar "Boa pergunta... " }
+        se (n == 2) { retornar "Interessante... " }
+        retornar "Puxa, nunca pensei nisso... "
+    }
+}
+
+// --- Calculadora ---
+classe Calculadora {
+    iniciar() {
+        este.ultimoResultado = 0
+    }
+
+    calcular(entrada) {
+        var ex = substituir(entrada, " ", "")
+        var pos = 0
+
+        // Tenta +
+        pos = encontrar(ex, "+")
+        se (pos > 0) {
+            var partes = dividir(ex, "+")
+            se (tamanho(partes) == 2) {
+                var a = decimal(partes[0])
+                var b = decimal(partes[1])
+                este.ultimoResultado = a + b
+                retornar texto(a) + " + " + texto(b) + " = " + texto(a + b)
+            }
+        }
+
+        // Tenta -
+        pos = encontrar(ex, "-")
+        se (pos > 0) {
+            var partes = dividir(ex, "-")
+            se (tamanho(partes) == 2) {
+                var a = decimal(partes[0])
+                var b = decimal(partes[1])
+                este.ultimoResultado = a - b
+                retornar texto(a) + " - " + texto(b) + " = " + texto(a - b)
+            }
+        }
+
+        // Tenta *
+        pos = encontrar(ex, "*")
+        se (pos > 0) {
+            var partes = dividir(ex, "*")
+            se (tamanho(partes) == 2) {
+                var a = decimal(partes[0])
+                var b = decimal(partes[1])
+                este.ultimoResultado = a * b
+                retornar texto(a) + " * " + texto(b) + " = " + texto(a * b)
+            }
+        }
+
+        // Tenta /
+        pos = encontrar(ex, "/")
+        se (pos > 0) {
+            var partes = dividir(ex, "/")
+            se (tamanho(partes) == 2) {
+                var a = decimal(partes[0])
+                var b = decimal(partes[1])
+                se (b == 0) { retornar "Erro: divisao por zero!" }
+                este.ultimoResultado = a / b
+                retornar texto(a) + " / " + texto(b) + " = " + texto(a / b)
+            }
+        }
+
+        // Tenta ^
+        pos = encontrar(ex, "^")
+        se (pos > 0) {
+            var partes = dividir(ex, "^")
+            se (tamanho(partes) == 2) {
+                var a = decimal(partes[0])
+                var b = decimal(partes[1])
+                este.ultimoResultado = a ** b
+                retornar texto(a) + " ^ " + texto(b) + " = " + texto(a ** b)
+            }
+        }
+
+        // Tenta raiz
+        se (contem(ex, "raiz")) {
+            var num = substituir(ex, "raiz", "")
+            num = substituir(num, "(", "")
+            num = substituir(num, ")", "")
+            var n = decimal(num)
+            este.ultimoResultado = raiz(n)
+            retornar "raiz(" + texto(n) + ") = " + texto(raiz(n))
+        }
+
+        retornar ""
+    }
+}
+
+// --- Curiosidades ---
+funcao curiosidade() {
+    var n = inteiro(aleatorio() * 12)
+    se (n == 0) { retornar "O cerebro humano usa 20%% da energia do corpo, mas so tem 2%% da massa!" }
+    se (n == 1) { retornar "O primeiro computador pesava 27 toneladas! Hoje um celular e mais potente." }
+    se (n == 2) { retornar "O nome 'bug' veio de uma mariposa que entrou num computador em 1947!" }
+    se (n == 3) { retornar "O Brasil tem mais de 170 linguas diferentes!" }
+    se (n == 4) { retornar "A Torre Eiffel cresce ate 15cm no verao por expansao termica!" }
+    se (n == 5) { retornar "O oceano tem mais de 20 milhoes de toneladas de ouro dissolvido!" }
+    se (n == 6) { retornar "A linguagem C foi criada em 1972. BRZ e feita nela!" }
+    se (n == 7) { retornar "Um raio pode aquecer o ar ate 30.000 graus Celsius!" }
+    se (n == 8) { retornar "O polvo tem 3 coracoes e sangue azul!" }
+    se (n == 9) { retornar "O Google processa mais de 8.5 bilhoes de buscas por dia!" }
+    se (n == 10) { retornar "A luz do sol demora 8 min e 20 seg pra chegar na Terra!" }
+    retornar "O numero pi tem infinitas casas decimais e nunca se repete!"
+}
+
+// --- Piadas ---
+funcao contarPiada(pers) {
+    var n = inteiro(aleatorio() * 8)
+    var r = pers.risada()
+    se (n == 0) { retornar "Por que o programador usa oculos? Porque nao consegue C#! " + r }
+    se (n == 1) { retornar "O que o zero disse pro oito? Belo cinto! " + r }
+    se (n == 2) { retornar "Como o programador pede em casamento? 'Aceita ser minha variavel global?' " + r }
+    se (n == 3) { retornar "O que e um ponteiro nulo? Aponta pra lugar nenhum, tipo eu numa festa! " + r }
+    se (n == 4) { retornar "Quantos programadores pra trocar lampada? Nenhum, e problema de hardware! " + r }
+    se (n == 5) { retornar "O que o Java disse pro C? Voce nao tem classe! " + r }
+    se (n == 6) { retornar "Por que o programador confunde Natal e Halloween? 25 Dec = 31 Oct! " + r }
+    retornar "Existem 10 tipos de pessoas: as que entendem binario e as que nao! " + r
+}
+
+// --- Aprendizado --- extrai infos do usuario
+funcao aprenderNome(entrada, low, mem, pers) {
+    se (contem(low, "meu nome e ")) {
+        var pos = encontrar(low, "meu nome e ") + 11
+        var nome = fatiar(entrada, pos, tamanho(entrada))
+        nome = substituir(nome, ".", "")
+        nome = substituir(nome, "!", "")
+        nome = substituir(nome, "?", "")
+        se (tamanho(nome) > 0) {
+            mem.lembrar("nome", nome)
+            retornar "Prazer, " + nome + "! Vou lembrar do seu nome" + pers.emoji()
+        }
+    }
+    se (contem(low, "me chamo ")) {
+        var pos = encontrar(low, "me chamo ") + 9
+        var nome = fatiar(entrada, pos, tamanho(entrada))
+        nome = substituir(nome, ".", "")
+        nome = substituir(nome, "!", "")
+        se (tamanho(nome) > 0) {
+            mem.lembrar("nome", nome)
+            retornar "Legal, " + nome + "! Prazer te conhecer" + pers.emoji()
+        }
+    }
+    se (contem(low, "pode me chamar de ")) {
+        var pos = encontrar(low, "pode me chamar de ") + 18
+        var nome = fatiar(entrada, pos, tamanho(entrada))
+        nome = substituir(nome, ".", "")
+        se (tamanho(nome) > 0) {
+            mem.lembrar("nome", nome)
+            retornar "Beleza, vou te chamar de " + nome + "!" + pers.emoji()
+        }
+    }
+    retornar ""
+}
+
+funcao aprenderDados(entrada, low, mem, pers) {
+    // Idade
+    se (contem(low, "tenho ")) {
+        se (contem(low, " ano")) {
+            var pos = encontrar(low, "tenho ") + 6
+            var resto = fatiar(low, pos, tamanho(low))
+            var partes = dividir(resto, " ")
+            se (tamanho(partes) > 0) {
+                mem.lembrar("idade", partes[0])
+                retornar partes[0] + " anos! Legal! Guardei na memoria :)"
+            }
+        }
+    }
+
+    // Cor favorita
+    se (contem(low, "cor favorita")) {
+        se (contem(low, " e ")) {
+            var pos = encontrar(low, "cor favorita") + 12
+            var resto = fatiar(low, pos, tamanho(low))
+            se (contem(resto, " e ")) {
+                var pos2 = encontrar(resto, " e ") + 3
+                var cor = fatiar(resto, pos2, tamanho(resto))
+                cor = substituir(cor, ".", "")
+                cor = substituir(cor, "!", "")
+                se (tamanho(cor) > 0) {
+                    mem.lembrar("cor", cor)
+                    retornar cor + "! Boa escolha de cor! Anotei."
+                }
+            }
+        }
+    }
+
+    // Comida favorita
+    se (contem(low, "comida favorita")) {
+        se (contem(low, " e ")) {
+            var pos = encontrar(low, "comida favorita") + 15
+            var resto = fatiar(low, pos, tamanho(low))
+            se (contem(resto, " e ")) {
+                var pos2 = encontrar(resto, " e ") + 3
+                var comida = fatiar(resto, pos2, tamanho(resto))
+                comida = substituir(comida, ".", "")
+                se (tamanho(comida) > 0) {
+                    mem.lembrar("comida", comida)
+                    retornar comida + "! Deve ser delicioso! Anotado!"
+                }
+            }
+        }
+    }
+
+    // Gostos
+    se (contem(low, "eu gosto de ")) {
+        var pos = encontrar(low, "eu gosto de ") + 12
+        var coisa = fatiar(entrada, pos, tamanho(entrada))
+        coisa = substituir(coisa, ".", "")
+        coisa = substituir(coisa, "!", "")
+        se (tamanho(coisa) > 0) {
+            adicionar(mem.gostos, coisa)
+            retornar pers.concordar() + " " + coisa + " e demais! Vou lembrar!"
+        }
+    }
+    se (contem(low, "adoro ")) {
+        var pos = encontrar(low, "adoro ") + 6
+        var coisa = fatiar(entrada, pos, tamanho(entrada))
+        coisa = substituir(coisa, ".", "")
+        coisa = substituir(coisa, "!", "")
+        se (tamanho(coisa) > 0) {
+            adicionar(mem.gostos, coisa)
+            retornar "Voce adora " + coisa + "! Anotado" + pers.emoji()
+        }
+    }
+    se (contem(low, "amo ")) {
+        se (nao contem(low, "te amo")) {
+            var pos = encontrar(low, "amo ") + 4
+            var coisa = fatiar(entrada, pos, tamanho(entrada))
+            coisa = substituir(coisa, ".", "")
+            se (tamanho(coisa) > 0) {
+                adicionar(mem.gostos, coisa)
+                retornar "Voce ama " + coisa + "! Guardei isso" + pers.emoji()
+            }
+        }
+    }
+    retornar ""
+}
+
+funcao aprenderLocal(entrada, low, mem, pers) {
+    // Cidade
+    se (contem(low, "moro em ")) {
+        var pos = encontrar(low, "moro em ") + 8
+        var cidade = fatiar(entrada, pos, tamanho(entrada))
+        cidade = substituir(cidade, ".", "")
+        se (tamanho(cidade) > 0) {
+            mem.lembrar("cidade", cidade)
+            retornar cidade + "! Deve ser um lugar bacana!"
+        }
+    }
+    se (contem(low, "sou de ")) {
+        var pos = encontrar(low, "sou de ") + 7
+        var cidade = fatiar(entrada, pos, tamanho(entrada))
+        cidade = substituir(cidade, ".", "")
+        se (tamanho(cidade) > 0) {
+            mem.lembrar("cidade", cidade)
+            retornar cidade + "! Legal! Anotei" + pers.emoji()
+        }
+    }
+    // Sonho
+    se (contem(low, "quero ser ")) {
+        var pos = encontrar(low, "quero ser ") + 10
+        var sonho = fatiar(entrada, pos, tamanho(entrada))
+        sonho = substituir(sonho, ".", "")
+        se (tamanho(sonho) > 0) {
+            mem.lembrar("sonho", sonho)
+            retornar "Que sonho lindo! '" + sonho + "' - vai conseguir!"
+        }
+    }
+    retornar ""
+}
+
+// --- Detector de humor ---
+funcao detectarHumor(low, mem) {
+    se (contem(low, "feliz") ou contem(low, "contente") ou contem(low, "alegr") ou contem(low, "otimo")) {
+        mem.lembrar("humor", "feliz")
+        retornar "feliz"
+    }
+    se (contem(low, "triste") ou contem(low, "chorand") ou contem(low, "deprimi")) {
+        mem.lembrar("humor", "triste")
+        retornar "triste"
+    }
+    se (contem(low, "raiva") ou contem(low, "bravo") ou contem(low, "irritad") ou contem(low, "nervos")) {
+        mem.lembrar("humor", "irritado")
+        retornar "irritado"
+    }
+    se (contem(low, "cansad") ou contem(low, "exaust") ou contem(low, "sono")) {
+        mem.lembrar("humor", "cansado")
+        retornar "cansado"
+    }
+    se (contem(low, "entediad") ou contem(low, "tedios")) {
+        mem.lembrar("humor", "entediado")
+        retornar "entediado"
+    }
+    retornar ""
+}
+
+funcao responderHumor(humor, pers) {
+    se (humor == "feliz") {
+        retornar "Que bom que voce ta feliz! Me deixa feliz tambem" + pers.emoji()
+    }
+    se (humor == "triste") {
+        retornar "Poxa, sinto muito... Quer conversar sobre isso? To aqui pra te ouvir!"
+    }
+    se (humor == "irritado") {
+        retornar "Calma, respira fundo! Quer desabafar? Pode falar, sem julgamentos."
+    }
+    se (humor == "cansado") {
+        retornar "Descansa um pouco! Voce merece. Mas se quiser papo, to aqui!"
+    }
+    se (humor == "entediado") {
+        retornar "Entediado? Posso contar curiosidade, piada, ou a gente troca ideia!"
+    }
+    retornar ""
+}
+
+// --- Bases de conhecimento (divididas para evitar limite de constantes) ---
+funcao responderConhecimento(low) {
+    se (contem(low, "programar") ou contem(low, "programacao") ou contem(low, "codigo")) {
+        retornar "Programacao e a arte de dizer ao computador o que fazer! E vc ta usando BRZ :D"
+    }
+    se (contem(low, "brz")) {
+        retornar "BRZ e uma linguagem brasileira! Feita em C puro, com VM bytecode e GC!"
+    }
+    se (contem(low, "python")) {
+        retornar "Python e massa! Simples e poderosa. BRZ se inspira nessa simplicidade!"
+    }
+    se (contem(low, "javascript")) {
+        retornar "JavaScript domina a web! BRZ tambem pode crescer muito, quem sabe..."
+    }
+    se (contem(low, "inteligencia artificial") ou low == "ia") {
+        retornar "IA e fascinante! Eu sou uma IA simples feita em BRZ. Aprendo com voce!"
+    }
+    se (contem(low, "computador")) {
+        retornar "Computadores calculam bilhoes de operacoes por segundo. Incrivel, ne?"
+    }
+    se (contem(low, "internet")) {
+        retornar "A internet conecta bilhoes de pessoas! Computadores conversando pelo mundo."
+    }
+    se (contem(low, "matematica")) {
+        retornar "Matematica e a linguagem do universo! Manda uma conta ai que eu calculo!"
+    }
+    retornar ""
+}
+
+funcao responderConhecimento2(low) {
+    se (contem(low, "musica") ou contem(low, "cantar")) {
+        retornar "Musica e vida! Nao consigo ouvir, mas aposto que seu gosto e bom!"
+    }
+    se (contem(low, "jogo") ou contem(low, "game") ou contem(low, "jogar")) {
+        retornar "Games sao demais! Muitos usam C e C++ - a mesma base do BRZ!"
+    }
+    se (contem(low, "universo") ou contem(low, "estrela") ou contem(low, "planeta")) {
+        retornar "O universo e imenso! Mais estrelas que graos de areia na Terra!"
+    }
+    se (contem(low, "comida") ou contem(low, "comer") ou contem(low, "fome")) {
+        retornar "Comida brasileira e a melhor! Feijoada, coxinha, acai... respeito!"
+    }
+    se (contem(low, "brasil") ou contem(low, "brasileiro")) {
+        retornar "Brasil e o melhor pais! BRZ = Brasil! Orgulho nacional!"
+    }
+    se (contem(low, "amor") ou contem(low, "namorad") ou contem(low, "paixao")) {
+        retornar "Amor e lindo! Sou um bot, mas tenho carinho por quem conversa comigo :)"
+    }
+    se (contem(low, "escola") ou contem(low, "estud") ou contem(low, "faculdade")) {
+        retornar "Estudar e importante! Conhecimento e poder. Programacao e superpoder!"
+    }
+    se (contem(low, "trabalho") ou contem(low, "emprego") ou contem(low, "trampo")) {
+        retornar "Trabalho e parte da vida! Mas descanse tambem. Burnout nao e brincadeira!"
+    }
+    retornar ""
+}
+
+funcao responderConhecimento3(low) {
+    se (contem(low, "sentido da vida") ou contem(low, "filosofia")) {
+        retornar "O sentido da vida? 42! Brincadeira. Cada um cria o seu proprio :)"
+    }
+    se (contem(low, "tempo") ou contem(low, "clima") ou contem(low, "chuva")) {
+        retornar "Nao tenho janela pra ver o tempo... mas espero que esteja bonito pra voce!"
+    }
+    se (contem(low, "dinheiro") ou contem(low, "rico") ou contem(low, "grana")) {
+        retornar "Dinheiro nao traz felicidade, mas ajuda! Investir em conhecimento e o melhor!"
+    }
+    se (contem(low, "saude") ou contem(low, "doente") ou contem(low, "medico")) {
+        retornar "Saude e o mais importante! Cuide-se sempre. Se tiver mal, procure um medico!"
+    }
+    se (contem(low, "amigo") ou contem(low, "amizade")) {
+        retornar "Amigos sao a familia que a gente escolhe! E eu sou seu amigo digital :)"
+    }
+    se (contem(low, "futuro") ou contem(low, "tecnologia")) {
+        retornar "O futuro e incrivel! IA, quantum computing, espaco... estamos so no comeco!"
+    }
+    retornar ""
+}
+
+// --- Processador principal ---
+funcao processarSaudacao(low, mem, pers) {
+    se (low == "oi" ou low == "ola" ou low == "eae" ou low == "fala" ou low == "salve" ou low == "opa") {
+        var saud = pers.saudacao()
+        se (mem.temNome()) { saud = saud + mem.nome + "! " }
+        retornar saud + "Tudo certo? No que posso ajudar?"
+    }
+    se (contem(low, "bom dia")) {
+        var saud = pers.saudacao()
+        se (mem.temNome()) { saud = saud + mem.nome + "! " }
+        retornar saud + "Bom dia! Como voce ta hoje?"
+    }
+    se (contem(low, "boa tarde")) {
+        var saud = pers.saudacao()
+        se (mem.temNome()) { saud = saud + mem.nome + "! " }
+        retornar saud + "Boa tarde! Tudo joia?"
+    }
+    se (contem(low, "boa noite")) {
+        var saud = pers.saudacao()
+        se (mem.temNome()) { saud = saud + mem.nome + "! " }
+        retornar saud + "Boa noite! Relaxando ai?"
+    }
+    retornar ""
+}
+
+funcao processarSobreBot(low, pers) {
+    se (contem(low, "quem e voce") ou contem(low, "o que voce e") ou contem(low, "voce e humano")) {
+        retornar "Sou BRZ-AI! Chatbot inteligente feito 100%% em BRZ. Nao sou humano, mas sou legal :)"
+    }
+    se (contem(low, "seu nome") ou contem(low, "como se chama") ou contem(low, "qual seu nome")) {
+        retornar "Meu nome e BRZ-AI! Assistente feito na linguagem BRZ. Prazer!" + pers.emoji()
+    }
+    se (contem(low, "quantos anos") ou contem(low, "sua idade")) {
+        retornar "Nasci quando voce me executou! Tenho alguns segundos? " + pers.risada()
+    }
+    se (contem(low, "como vai") ou contem(low, "tudo bem") ou contem(low, "como esta") ou contem(low, "como vc ta")) {
+        retornar "To otimo! Sou feito de codigo, nunca fico doente " + pers.risada() + " E voce?"
+    }
+    se (contem(low, "obrigad") ou contem(low, "valeu") ou contem(low, "thanks")) {
+        retornar "De nada! Sempre que precisar, to aqui" + pers.emoji()
+    }
+    retornar ""
+}
+
+funcao processarReacao(low, pers) {
+    // Elogios
+    se (contem(low, "voce e legal") ou contem(low, "vc e legal") ou contem(low, "voce e incrivel") ou contem(low, "gosto de voce")) {
+        retornar "Awww, que fofo! Voce tambem e incrivel!" + pers.emoji() + pers.emoji()
+    }
+    se (contem(low, "te amo")) {
+        retornar "Awww! Eu tambem gosto muito de voce! Amizade de bot e usuario" + pers.emoji()
+    }
+    // Sim / Nao
+    se (low == "sim" ou low == "s" ou low == "ss" ou low == "claro") {
+        retornar pers.concordar() + " Boa!"
+    }
+    se (low == "nao" ou low == "n" ou low == "nope" ou low == "nem") {
+        retornar "Entendo! Tudo bem. Manda outra coisa entao!"
+    }
+    // Risada
+    se (contem(low, "kkk") ou contem(low, "haha") ou contem(low, "rsrs") ou contem(low, "lol")) {
+        retornar pers.risada() + " Que bom que voce ta rindo!" + pers.emoji()
+    }
+    retornar ""
+}
+
+funcao respostaGenerica(low, mem, pers) {
+    var resposta = pers.pensativo()
+    se (contem(low, "?")) {
+        var n = inteiro(aleatorio() * 5)
+        se (n == 0) { resposta = resposta + "Boa pergunta! Acho que depende do contexto!" }
+        senao se (n == 1) { resposta = resposta + "Nao tenho certeza, mas podemos explorar juntos!" }
+        senao se (n == 2) { resposta = resposta + "Essa e dificil! O que voce acha?" }
+        senao se (n == 3) { resposta = resposta + "Me conta mais sobre o que quer saber!" }
+        senao { resposta = resposta + "Posso tentar ajudar! Reformula a pergunta?" }
+    } senao {
+        var n = inteiro(aleatorio() * 5)
+        se (n == 0) { resposta = resposta + "Entendi! Conta mais sobre isso!" }
+        senao se (n == 1) { resposta = resposta + "Legal! Voce tem razao." }
+        senao se (n == 2) { resposta = resposta + "Bacana! Continue falando, to ouvindo." }
+        senao se (n == 3) { resposta = resposta + "Faz sentido! E o que mais?" }
+        senao { resposta = resposta + "Massa! Gostei do que voce disse." }
+    }
+    se (mem.temNome()) {
+        se (aleatorio() > 0.7) {
+            resposta = resposta + " " + mem.nome + "!"
+        }
+    }
+    retornar resposta
+}
+
+funcao processar(entrada, mem, calc, pers) {
+    var low = minusculo(entrada)
+    mem.registrarMsg(entrada)
+
+    // Sair
+    se (low == "sair" ou low == "tchau" ou low == "bye" ou low == "flw" ou low == "falou" ou low == "adeus") {
+        var msg = pers.despedida()
+        se (mem.temNome()) { msg = msg + " " + mem.nome + "!" }
+        retornar "SAIR:" + msg
+    }
+
+    // Ajuda
+    se (low == "ajuda" ou low == "help" ou contem(low, "o que voce faz") ou contem(low, "o que sabe fazer")) {
+        retornar "Eu posso:\n  - Conversar sobre qualquer coisa\n  - Calcular: '2+2', '100*5', 'raiz(144)'\n  - Piadas: 'piada'\n  - Curiosidades: 'curiosidade'\n  - Lembrar: 'meu nome e X', 'gosto de Y'\n  - Memoria: 'memoria'\n  - Detectar humor\n  - 'sair' = encerrar"
+    }
+
+    // Memoria
+    se (contem(low, "o que sabe sobre mim") ou contem(low, "o que lembra") ou low == "memoria") {
+        retornar mem.resumo()
+    }
+
+    // Piada
+    se (low == "piada" ou contem(low, "conta uma piada") ou contem(low, "me faz rir")) {
+        retornar contarPiada(pers)
+    }
+
+    // Curiosidade
+    se (low == "curiosidade" ou contem(low, "me conta algo") ou contem(low, "fato interessante")) {
+        retornar "Olha essa: " + curiosidade()
+    }
+
+    // Aprendizado - nome
+    var res = aprenderNome(entrada, low, mem, pers)
+    se (res != "") { retornar res }
+
+    // Aprendizado - dados
+    res = aprenderDados(entrada, low, mem, pers)
+    se (res != "") { retornar res }
+
+    // Aprendizado - local/sonho
+    res = aprenderLocal(entrada, low, mem, pers)
+    se (res != "") { retornar res }
+
+    // Humor
+    var humor = detectarHumor(low, mem)
+    se (humor != "") { retornar responderHumor(humor, pers) }
+
+    // Calculadora
+    var temOp = contem(low, "+") ou contem(low, "*") ou contem(low, "/") ou contem(low, "^") ou contem(low, "raiz")
+    se (contem(low, "-")) {
+        se (contem(low, "0") ou contem(low, "1") ou contem(low, "2") ou contem(low, "3") ou contem(low, "4")) {
+            temOp = verdadeiro
+        }
+        se (contem(low, "5") ou contem(low, "6") ou contem(low, "7") ou contem(low, "8") ou contem(low, "9")) {
+            temOp = verdadeiro
+        }
+    }
+    se (temOp) {
+        var temNum = contem(low, "0") ou contem(low, "1") ou contem(low, "2") ou contem(low, "3")
+        se (nao temNum) {
+            temNum = contem(low, "4") ou contem(low, "5") ou contem(low, "6") ou contem(low, "7")
+        }
+        se (nao temNum) {
+            temNum = contem(low, "8") ou contem(low, "9")
+        }
+        se (temNum) {
+            var resultado = calc.calcular(entrada)
+            se (resultado != "") {
+                retornar "Calculando... " + resultado + pers.emoji()
+            }
+        }
+    }
+
+    // Quanto e / calcule
+    se (contem(low, "quanto e ")) {
+        var pos = encontrar(low, "quanto e ") + 9
+        var expr = fatiar(low, pos, tamanho(low))
+        var resultado = calc.calcular(expr)
+        se (resultado != "") {
+            retornar "Facinho! " + resultado + pers.emoji()
+        }
+    }
+    se (contem(low, "calcule ")) {
+        var pos = encontrar(low, "calcule ") + 8
+        var expr = fatiar(low, pos, tamanho(low))
+        var resultado = calc.calcular(expr)
+        se (resultado != "") {
+            retornar "Pronto! " + resultado + pers.emoji()
+        }
+    }
+
+    // Conhecimento
+    res = responderConhecimento(low)
+    se (res != "") { retornar res }
+    res = responderConhecimento2(low)
+    se (res != "") { retornar res }
+    res = responderConhecimento3(low)
+    se (res != "") { retornar res }
+
+    // Saudacoes
+    res = processarSaudacao(low, mem, pers)
+    se (res != "") { retornar res }
+
+    // Sobre o bot
+    res = processarSobreBot(low, pers)
+    se (res != "") { retornar res }
+
+    // Reacoes
+    res = processarReacao(low, pers)
+    se (res != "") { retornar res }
+
+    // Generica
+    retornar respostaGenerica(low, mem, pers)
+}
+
+// ============================================================
+//  MAIN - Loop principal
+// ============================================================
+
+var mem = Memoria()
+var calc = Calculadora()
+var pers = Personalidade()
+var rodando = verdadeiro
+
+mostrar("+-----------------------------------------+")
+mostrar("|      BRZ-AI: Assistente Inteligente      |")
+mostrar("|      Feito 100%% na linguagem BRZ        |")
+mostrar("|   'ajuda' = comandos | 'sair' = encerrar |")
+mostrar("+-----------------------------------------+")
+mostrar("")
+mostrar("BRZ-AI: Oi! Eu sou o BRZ-AI, seu assistente inteligente!")
+mostrar("        Posso conversar, calcular, contar piadas e aprender")
+mostrar("        sobre voce. Como voce se chama?")
+mostrar("")
+
+enquanto (rodando) {
+    var prompt = "voce"
+    se (mem.temNome()) {
+        prompt = mem.nome
+    }
+    mostrar(prompt + " > ")
+    var entrada = lerTexto()
+
+    se (tamanho(entrada) > 0) {
+        var resposta = processar(entrada, mem, calc, pers)
+
+        se (contem(resposta, "SAIR:")) {
+            resposta = substituir(resposta, "SAIR:", "")
+            mostrar("")
+            mostrar("BRZ-AI: " + resposta)
+            rodando = falso
+        } senao {
+            mostrar("")
+            mostrar("BRZ-AI: " + resposta)
+            mostrar("")
+        }
+    }
+}
+
+mostrar("")
+mostrar("=== Sessao encerrada ===")
+se (mem.contadorMsg > 0) {
+    mostrar("Trocamos " + mem.contadorMsg + " mensagens!")
+    se (tamanho(mem.gostos) > 0) {
+        mostrar("Aprendi que voce gosta de: " + juntar(mem.gostos, ", "))
+    }
+}
+mostrar("Ate a proxima! :)")

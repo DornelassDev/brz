@@ -17,7 +17,9 @@
 #include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include <time.h>
 
 /* ===========================================================================
@@ -237,6 +239,195 @@ static BrzValue native_abs(int arg_count, BrzValue* args) {
     }
     double v = BRZ_AS_DOUBLE(args[0]);
     return BRZ_DOUBLE(fabs(v));
+}
+
+/* contem(texto, subtexto) — verifica se string contém substring. */
+static BrzValue native_contem(int arg_count, BrzValue* args) {
+    (void)arg_count;
+    if (!BRZ_IS_STRING(args[0]) || !BRZ_IS_STRING(args[1])) return BRZ_BOOL(false);
+    const char* haystack = BRZ_AS_CSTRING(args[0]);
+    const char* needle   = BRZ_AS_CSTRING(args[1]);
+    return BRZ_BOOL(strstr(haystack, needle) != NULL);
+}
+
+/* minusculo(texto) — converte string para minúsculas. */
+static BrzValue native_minusculo(int arg_count, BrzValue* args) {
+    (void)arg_count;
+    if (!BRZ_IS_STRING(args[0])) return args[0];
+    BrzString* src = BRZ_AS_STRING(args[0]);
+    char* buf = BRZ_ALLOCATE(char, src->length + 1);
+    for (int i = 0; i < src->length; i++) {
+        buf[i] = (char)tolower((unsigned char)src->chars[i]);
+    }
+    buf[src->length] = '\0';
+    BrzString* result = brz_string_take(buf, src->length);
+    return BRZ_OBJECT(result);
+}
+
+/* maiusculo(texto) — converte string para maiúsculas. */
+static BrzValue native_maiusculo(int arg_count, BrzValue* args) {
+    (void)arg_count;
+    if (!BRZ_IS_STRING(args[0])) return args[0];
+    BrzString* src = BRZ_AS_STRING(args[0]);
+    char* buf = BRZ_ALLOCATE(char, src->length + 1);
+    for (int i = 0; i < src->length; i++) {
+        buf[i] = (char)toupper((unsigned char)src->chars[i]);
+    }
+    buf[src->length] = '\0';
+    BrzString* result = brz_string_take(buf, src->length);
+    return BRZ_OBJECT(result);
+}
+
+/* fatiar(texto, inicio, fim) — extrai substring (índices baseados em 0). */
+static BrzValue native_fatiar(int arg_count, BrzValue* args) {
+    (void)arg_count;
+    if (!BRZ_IS_STRING(args[0])) return BRZ_OBJECT(brz_string_copy("", 0));
+    BrzString* src = BRZ_AS_STRING(args[0]);
+    int start = BRZ_IS_INT(args[1]) ? (int)BRZ_AS_INT(args[1]) : 0;
+    int end   = BRZ_IS_INT(args[2]) ? (int)BRZ_AS_INT(args[2]) : src->length;
+    if (start < 0) start += src->length;
+    if (end < 0)   end   += src->length;
+    if (start < 0) start = 0;
+    if (end > src->length) end = src->length;
+    if (start >= end) return BRZ_OBJECT(brz_string_copy("", 0));
+    return BRZ_OBJECT(brz_string_copy(src->chars + start, end - start));
+}
+
+/* substituir(texto, antigo, novo) — substitui TODAS as ocorrências. */
+static BrzValue native_substituir(int arg_count, BrzValue* args) {
+    (void)arg_count;
+    if (!BRZ_IS_STRING(args[0]) || !BRZ_IS_STRING(args[1]) || !BRZ_IS_STRING(args[2]))
+        return args[0];
+    const char* src     = BRZ_AS_CSTRING(args[0]);
+    const char* old_str = BRZ_AS_CSTRING(args[1]);
+    const char* new_str = BRZ_AS_CSTRING(args[2]);
+    int old_len = BRZ_AS_STRING(args[1])->length;
+    int new_len = BRZ_AS_STRING(args[2])->length;
+    if (old_len == 0) return args[0];
+
+    /* Conta ocorrências. */
+    int count = 0;
+    const char* tmp = src;
+    while ((tmp = strstr(tmp, old_str)) != NULL) { count++; tmp += old_len; }
+    if (count == 0) return args[0];
+
+    int src_len = BRZ_AS_STRING(args[0])->length;
+    int result_len = src_len + count * (new_len - old_len);
+    char* buf = BRZ_ALLOCATE(char, result_len + 1);
+    char* dst = buf;
+    const char* p = src;
+    while (*p) {
+        const char* found = strstr(p, old_str);
+        if (!found) {
+            strcpy(dst, p);
+            dst += strlen(p);
+            break;
+        }
+        memcpy(dst, p, (size_t)(found - p));
+        dst += found - p;
+        memcpy(dst, new_str, (size_t)new_len);
+        dst += new_len;
+        p = found + old_len;
+    }
+    *dst = '\0';
+    BrzString* result = brz_string_take(buf, result_len);
+    return BRZ_OBJECT(result);
+}
+
+/* dividir(texto, separador) — divide string em lista. */
+static BrzValue native_dividir(int arg_count, BrzValue* args) {
+    (void)arg_count;
+    if (!BRZ_IS_STRING(args[0]) || !BRZ_IS_STRING(args[1])) {
+        return BRZ_OBJECT(brz_list_new());
+    }
+    const char* src = BRZ_AS_CSTRING(args[0]);
+    const char* sep = BRZ_AS_CSTRING(args[1]);
+    int sep_len = BRZ_AS_STRING(args[1])->length;
+    BrzList* list = brz_list_new();
+
+    /* Protege da coleta de lixo. */
+    brz_vm_push(BRZ_OBJECT(list));
+
+    if (sep_len == 0) {
+        /* Separador vazio: divide por caractere. */
+        BrzString* s = BRZ_AS_STRING(args[0]);
+        for (int i = 0; i < s->length; i++) {
+            BrzValue ch = BRZ_OBJECT(brz_string_copy(s->chars + i, 1));
+            brz_value_array_write(&list->items, ch);
+        }
+    } else {
+        const char* p = src;
+        while (*p) {
+            const char* found = strstr(p, sep);
+            if (!found) {
+                brz_value_array_write(&list->items,
+                    BRZ_OBJECT(brz_string_copy(p, (int)strlen(p))));
+                break;
+            }
+            brz_value_array_write(&list->items,
+                BRZ_OBJECT(brz_string_copy(p, (int)(found - p))));
+            p = found + sep_len;
+        }
+    }
+
+    brz_vm_pop(); /* Remove proteção GC. */
+    return BRZ_OBJECT(list);
+}
+
+/* juntar(lista, separador) — junta lista de strings com separador. */
+static BrzValue native_juntar(int arg_count, BrzValue* args) {
+    (void)arg_count;
+    if (!BRZ_IS_LIST(args[0]) || !BRZ_IS_STRING(args[1])) {
+        return BRZ_OBJECT(brz_string_copy("", 0));
+    }
+    BrzList* list = BRZ_AS_LIST(args[0]);
+    const char* sep = BRZ_AS_CSTRING(args[1]);
+    int sep_len = BRZ_AS_STRING(args[1])->length;
+
+    if (list->items.count == 0)
+        return BRZ_OBJECT(brz_string_copy("", 0));
+
+    /* Calcula tamanho total. */
+    int total = 0;
+    for (int i = 0; i < list->items.count; i++) {
+        if (BRZ_IS_STRING(list->items.values[i])) {
+            total += BRZ_AS_STRING(list->items.values[i])->length;
+        }
+        if (i > 0) total += sep_len;
+    }
+
+    char* buf = BRZ_ALLOCATE(char, total + 1);
+    char* dst = buf;
+    for (int i = 0; i < list->items.count; i++) {
+        if (i > 0) {
+            memcpy(dst, sep, (size_t)sep_len);
+            dst += sep_len;
+        }
+        if (BRZ_IS_STRING(list->items.values[i])) {
+            BrzString* s = BRZ_AS_STRING(list->items.values[i]);
+            memcpy(dst, s->chars, (size_t)s->length);
+            dst += s->length;
+        }
+    }
+    *dst = '\0';
+    return BRZ_OBJECT(brz_string_take(buf, total));
+}
+
+/* encontrar(texto, subtexto) — retorna índice da primeira ocorrência ou -1. */
+static BrzValue native_encontrar(int arg_count, BrzValue* args) {
+    (void)arg_count;
+    if (!BRZ_IS_STRING(args[0]) || !BRZ_IS_STRING(args[1])) return BRZ_INT(-1);
+    const char* haystack = BRZ_AS_CSTRING(args[0]);
+    const char* needle   = BRZ_AS_CSTRING(args[1]);
+    const char* found = strstr(haystack, needle);
+    if (!found) return BRZ_INT(-1);
+    return BRZ_INT((int64_t)(found - haystack));
+}
+
+/* aleatorio() — retorna decimal aleatório entre 0 e 1. */
+static BrzValue native_aleatorio(int arg_count, BrzValue* args) {
+    (void)arg_count; (void)args;
+    return BRZ_DOUBLE((double)rand() / (double)RAND_MAX);
 }
 
 /* ===========================================================================
@@ -997,6 +1188,15 @@ static void define_all_natives(void) {
     brz_vm_define_native("remover",    native_remover,     2);
     brz_vm_define_native("raiz",       native_raiz,        1);
     brz_vm_define_native("abs",        native_abs,         1);
+    brz_vm_define_native("contem",     native_contem,      2);
+    brz_vm_define_native("minusculo",  native_minusculo,   1);
+    brz_vm_define_native("maiusculo",  native_maiusculo,   1);
+    brz_vm_define_native("fatiar",     native_fatiar,      3);
+    brz_vm_define_native("substituir", native_substituir,  3);
+    brz_vm_define_native("dividir",    native_dividir,     2);
+    brz_vm_define_native("juntar",     native_juntar,      2);
+    brz_vm_define_native("encontrar",  native_encontrar,   2);
+    brz_vm_define_native("aleatorio",  native_aleatorio,   0);
 }
 
 /* ===========================================================================
@@ -1004,6 +1204,7 @@ static void define_all_natives(void) {
  * =========================================================================== */
 
 void brz_vm_init(void) {
+    srand((unsigned int)time(NULL));
     reset_stack();
     brz_vm.objects        = NULL;
     brz_vm.bytes_allocated = 0;

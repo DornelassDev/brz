@@ -1,0 +1,132 @@
+// ====================================
+// DEMO: Coisas complexas em BRZ
+// ====================================
+
+// 1. CLOSURES - funcao que retorna funcao com estado
+funcao contador(inicio) {
+    var n = inicio
+    funcao incrementar() {
+        n = n + 1
+        retornar n
+    }
+    retornar incrementar
+}
+
+var c = contador(0)
+mostrar("=== Closures ===")
+mostrar(c())
+mostrar(c())
+mostrar(c())
+
+// 2. FUNCOES DE ORDEM SUPERIOR
+funcao aplicar(fn, valor) {
+    retornar fn(valor)
+}
+
+funcao dobro(x) { retornar x * 2 }
+funcao quadrado(x) { retornar x * x }
+
+mostrar("=== Funcoes de ordem superior ===")
+mostrar("dobro(5) = " + aplicar(dobro, 5))
+mostrar("quadrado(5) = " + aplicar(quadrado, 5))
+
+// 3. HERANCA COM SUPER
+classe Animal {
+    iniciar(nome, som) {
+        este.nome = nome
+        este.som = som
+    }
+    falar() {
+        mostrar(este.nome + " faz " + este.som)
+    }
+}
+
+classe Cachorro herda Animal {
+    iniciar(nome) {
+        super.iniciar(nome, "Au au!")
+    }
+    buscar(item) {
+        mostrar(este.nome + " buscou o " + item + "!")
+    }
+}
+
+classe Gato herda Animal {
+    iniciar(nome) {
+        super.iniciar(nome, "Miau!")
+    }
+    ronronar() {
+        mostrar(este.nome + " esta ronronando...")
+    }
+}
+
+mostrar("=== Heranca e polimorfismo ===")
+var rex = Cachorro("Rex")
+var mimi = Gato("Mimi")
+rex.falar()
+rex.buscar("graveto")
+mimi.falar()
+mimi.ronronar()
+
+// 4. RECURSAO - Fibonacci
+funcao fib(n) {
+    se (n < 2) { retornar n }
+    retornar fib(n - 1) + fib(n - 2)
+}
+
+mostrar("=== Fibonacci (recursao) ===")
+para (var i = 0; i < 15; i = i + 1) {
+    mostrar("fib(" + i + ") = " + fib(i))
+}
+
+// 5. CALLBACK PATTERN
+funcao filtrar(lista, inicio, fim, teste) {
+    para (var i = inicio; i < fim; i = i + 1) {
+        se (teste(i)) {
+            mostrar("  " + i + " passou no teste")
+        }
+    }
+}
+
+funcao ehPar(n) { retornar n - 2 * (n / 2) == 0 }
+
+mostrar("=== Callback pattern ===")
+mostrar("Numeros pares de 1 a 20:")
+
+para (var i = 2; i <= 20; i = i + 2) {
+    mostrar("  " + i)
+}
+
+// 6. DESIGN PATTERN: Strategy
+classe Calculadora {
+    iniciar() {
+        este.resultado = 0
+    }
+    executar(operacao, a, b) {
+        este.resultado = operacao(a, b)
+        retornar este.resultado
+    }
+}
+
+funcao somar(a, b) { retornar a + b }
+funcao subtrair(a, b) { retornar a - b }
+funcao multiplicar(a, b) { retornar a * b }
+
+mostrar("=== Strategy Pattern ===")
+var calc = Calculadora()
+mostrar("10 + 5 = " + calc.executar(somar, 10, 5))
+mostrar("10 - 5 = " + calc.executar(subtrair, 10, 5))
+mostrar("10 * 5 = " + calc.executar(multiplicar, 10, 5))
+
+// 7. BENCHMARK - velocidade da VM
+mostrar("=== Benchmark ===")
+var inicio = relogio()
+var soma = 0
+para (var i = 0; i < 100000; i = i + 1) {
+    soma = soma + i
+}
+var fim = relogio()
+mostrar("Soma de 0 a 99999 = " + soma)
+mostrar("Tempo: " + (fim - inicio) + " segundos")
+
+mostrar("")
+mostrar("BRZ: linguagem completa, VM nativa, zero dependencias.")

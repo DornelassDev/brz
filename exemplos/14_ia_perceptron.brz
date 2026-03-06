@@ -1,0 +1,118 @@
+// ============================================
+// IA EM BRZ: Perceptron (Rede Neural Simples)
+// ============================================
+// Um perceptron APRENDE sozinho a resolver
+// a porta logica AND. Ninguem programa a resposta,
+// ele descobre ajustando os pesos.
+
+classe Perceptron {
+    iniciar(taxaAprendizado) {
+        este.peso1 = -0.5
+        este.peso2 = -0.5
+        este.bias = 0.5
+        este.taxa = taxaAprendizado
+    }
+
+    // Funcao de ativacao: degrau
+    ativar(soma) {
+        se (soma >= 1) {
+            retornar 1
+        }
+        retornar 0
+    }
+
+    // Previsao: calcula saida
+    prever(x1, x2) {
+        var soma = x1 * este.peso1 + x2 * este.peso2 + este.bias
+        retornar este.ativar(soma)
+    }
+
+    // Treino: ajusta pesos com base no erro
+    treinar(x1, x2, esperado) {
+        var saida = este.prever(x1, x2)
+        var erro = esperado - saida
+
+        // Regra de aprendizado do perceptron
+        este.peso1 = este.peso1 + este.taxa * erro * x1
+        este.peso2 = este.peso2 + este.taxa * erro * x2
+        este.bias = este.bias + este.taxa * erro
+
+        retornar erro
+    }
+}
+
+// --- Criar o perceptron ---
+var ia = Perceptron(0.1)
+
+mostrar("============================================")
+mostrar("  IA em BRZ: Perceptron aprende porta AND")
+mostrar("============================================")
+mostrar("")
+
+// --- Antes do treino ---
+mostrar("ANTES DO TREINO (pesos aleatorios):")
+mostrar("  0 E 0 = " + ia.prever(0, 0) + "  (esperado: 0)")
+mostrar("  0 E 1 = " + ia.prever(0, 1) + "  (esperado: 0)")
+mostrar("  1 E 0 = " + ia.prever(1, 0) + "  (esperado: 0)")
+mostrar("  1 E 1 = " + ia.prever(1, 1) + "  (esperado: 1)")
+mostrar("")
+
+// --- Treinar por 50 epocas ---
+mostrar("TREINANDO...")
+var epoca = 0
+var convergiu = falso
+enquanto (epoca < 50) {
+    var erroTotal = 0
+
+    // Dados de treino: porta AND
+    var e1 = ia.treinar(0, 0, 0)
+    se (e1 < 0) { e1 = 0 - e1 }
+    erroTotal = erroTotal + e1
+
+    var e2 = ia.treinar(0, 1, 0)
+    se (e2 < 0) { e2 = 0 - e2 }
+    erroTotal = erroTotal + e2
+
+    var e3 = ia.treinar(1, 0, 0)
+    se (e3 < 0) { e3 = 0 - e3 }
+    erroTotal = erroTotal + e3
+
+    var e4 = ia.treinar(1, 1, 1)
+    se (e4 < 0) { e4 = 0 - e4 }
+    erroTotal = erroTotal + e4
+
+    se (epoca < 5) {
+        mostrar("  Epoca " + (epoca + 1) + " | Erro: " + erroTotal)
+    }
+    se (epoca == 5) {
+        mostrar("  ...")
+    }
+
+    se (erroTotal == 0) {
+        mostrar("  >>> CONVERGIU na epoca " + (epoca + 1) + "! <<<")
+        convergiu = verdadeiro
+        epoca = 999
+    }
+
+    epoca = epoca + 1
+}
+
+se (convergiu == falso) {
+    mostrar("  Treino completo (50 epocas)")
+}
+
+// --- Depois do treino ---
+mostrar("")
+mostrar("DEPOIS DO TREINO (IA aprendeu):")
+mostrar("  0 E 0 = " + ia.prever(0, 0) + "  (esperado: 0)")
+mostrar("  0 E 1 = " + ia.prever(0, 1) + "  (esperado: 0)")
+mostrar("  1 E 0 = " + ia.prever(1, 0) + "  (esperado: 0)")
+mostrar("  1 E 1 = " + ia.prever(1, 1) + "  (esperado: 1)")
+mostrar("")
+mostrar("PESOS APRENDIDOS:")
+mostrar("  Peso 1: " + ia.peso1)
+mostrar("  Peso 2: " + ia.peso2)
+mostrar("  Bias:   " + ia.bias)
+mostrar("")
+mostrar("Ninguem programou as respostas.")
+mostrar("A IA ajustou os pesos ate acertar tudo sozinha.")
