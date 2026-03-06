@@ -63,7 +63,7 @@
           <li><a href="#crud">CRUD</a></li>
           <li><a href="#io">Entrada e saida</a></li>
           <li><a href="#erros">Tratamento de erros</a></li>
-          <li><a href="#transpilacao">Transpilacao</a></li>
+          <li><a href="#execucao">Execucao</a></li>
         </ul>
       </div>
     </aside>
@@ -74,11 +74,11 @@
 
       <!-- INTRODUCAO -->
       <h2 id="introducao">Introducao</h2>
-      <p>BRZ e uma linguagem de programacao com sintaxe inteiramente em portugues. Ela foi projetada para ser acessivel a falantes nativos de portugues sem sacrificar funcionalidade. O codigo BRZ e transpilado para Java, Python, C ou C++, gerando codigo limpo e executavel.</p>
-      <p>Um arquivo BRZ tem a extensao <code>.brz</code> e e executado pelo compilador via linha de comando:</p>
-      <pre><code>$ brz rodar meuPrograma.brz</code></pre>
-      <p>Ou transpilado para outra linguagem:</p>
-      <pre><code>$ brz compilar meuPrograma.brz --para python</code></pre>
+      <p>BRZ e uma linguagem de programacao com sintaxe inteiramente em portugues. Ela foi projetada para ser acessivel a falantes nativos de portugues sem sacrificar funcionalidade. O codigo BRZ e compilado para bytecode e executado por uma VM nativa escrita em C — sem nenhuma dependencia externa.</p>
+      <p>Um arquivo BRZ tem a extensao <code>.brz</code> e e executado diretamente pela VM:</p>
+      <pre><code>$ brz meuPrograma.brz</code></pre>
+      <p>Ou codigo inline:</p>
+      <pre><code>$ brz -c 'mostrar("Ola mundo!")'</code></pre>
 
       <!-- VARIAVEIS -->
       <h2 id="variaveis">Variaveis</h2>
@@ -95,59 +95,45 @@ nome = "Novo nome"</code></pre>
 
       <!-- TIPOS -->
       <h2 id="tipos">Tipos de dados</h2>
-      <p>BRZ possui tipagem explicita. Todos os tipos estao listados abaixo com sua correspondencia nas linguagens alvo.</p>
+      <p>BRZ e uma linguagem dinamicamente tipada. Os valores possuem tipos em tempo de execucao.</p>
       <table class="docs-table">
         <thead>
           <tr>
-            <th>Tipo BRZ</th>
-            <th>Java</th>
-            <th>Python</th>
-            <th>C</th>
-            <th>C++</th>
+            <th>Tipo</th>
+            <th>Exemplo</th>
+            <th>Descricao</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td><code>numero</code></td>
-            <td>int</td>
-            <td>int</td>
-            <td>int</td>
-            <td>int</td>
-          </tr>
-          <tr>
-            <td><code>decimal</code></td>
-            <td>double</td>
-            <td>float</td>
-            <td>double</td>
-            <td>double</td>
+            <td>42, 3.14</td>
+            <td>Numeros inteiros e decimais (double de 64 bits)</td>
           </tr>
           <tr>
             <td><code>texto</code></td>
-            <td>String</td>
-            <td>str</td>
-            <td>char*</td>
-            <td>std::string</td>
+            <td>"Ola"</td>
+            <td>Strings imutaveis com interning automatico</td>
           </tr>
           <tr>
             <td><code>logico</code></td>
-            <td>boolean</td>
-            <td>bool</td>
-            <td>int (0/1)</td>
-            <td>bool</td>
+            <td>verdadeiro, falso</td>
+            <td>Valores booleanos</td>
           </tr>
           <tr>
-            <td><code>caractere</code></td>
-            <td>char</td>
-            <td>str (1 char)</td>
-            <td>char</td>
-            <td>char</td>
+            <td><code>nulo</code></td>
+            <td>nulo</td>
+            <td>Ausencia de valor</td>
           </tr>
           <tr>
-            <td><code>vazio</code></td>
-            <td>void</td>
-            <td>None</td>
-            <td>void</td>
-            <td>void</td>
+            <td><code>funcao</code></td>
+            <td>funcao() { ... }</td>
+            <td>Funcoes de primeira classe e closures</td>
+          </tr>
+          <tr>
+            <td><code>classe</code></td>
+            <td>classe Foo { ... }</td>
+            <td>Classes com heranca e metodos</td>
           </tr>
         </tbody>
       </table>
@@ -346,19 +332,16 @@ para cada (nota em notas) {
 
       <!-- CRUD -->
       <h2 id="crud">CRUD</h2>
-      <p>BRZ possui operacoes CRUD como parte da sintaxe. Elas geram codigo de armazenamento na linguagem alvo.</p>
-      <pre><code>// Criar
-criar("Produto", {nome: "Mouse", preco: 49.90})
+      <p>BRZ suporta funcoes nativas para manipulacao de dados. Voce pode usar variaveis e classes para organizar armazenamento.</p>
+      <pre><code>classe Produto {
+    iniciar(nome, preco) {
+        este.nome = nome
+        este.preco = preco
+    }
+}
 
-// Listar todos
-listar("Produto")
-
-// Atualizar por ID
-atualizar("Produto", 1, {preco: 59.90})
-
-// Deletar por ID
-deletar("Produto", 1)</code></pre>
-      <p>Na transpilacao para Java, o CRUD gera uma estrutura baseada em <code>HashMap</code>. Em Python, usa dicionarios. No alvo C/C++, gera comentarios indicando a necessidade de implementacao externa.</p>
+var mouse = Produto("Mouse", 49.90)
+mostrar(mouse.nome + ": R$" + mouse.preco)</code></pre>
 
       <!-- I/O -->
       <h2 id="io">Entrada e saida</h2>
@@ -367,18 +350,17 @@ deletar("Produto", 1)</code></pre>
 mostrar("Nome: " + nome + ", idade: " + idade)</code></pre>
 
       <h3>Entrada</h3>
-      <pre><code>texto nome = lerTexto()
-numero idade = lerNumero()
-decimal peso = lerDecimal()</code></pre>
+      <pre><code>var nome = lerTexto()
+var idade = lerNumero()</code></pre>
       <table class="docs-table">
         <thead>
-          <tr><th>Funcao BRZ</th><th>Java</th><th>Python</th><th>C</th></tr>
+          <tr><th>Funcao BRZ</th><th>Descricao</th></tr>
         </thead>
         <tbody>
-          <tr><td><code>mostrar()</code></td><td>System.out.println()</td><td>print()</td><td>printf()</td></tr>
-          <tr><td><code>lerTexto()</code></td><td>scanner.nextLine()</td><td>input()</td><td>fgets()</td></tr>
-          <tr><td><code>lerNumero()</code></td><td>scanner.nextInt()</td><td>int(input())</td><td>scanf("%d")</td></tr>
-          <tr><td><code>lerDecimal()</code></td><td>scanner.nextDouble()</td><td>float(input())</td><td>scanf("%lf")</td></tr>
+          <tr><td><code>mostrar(valor)</code></td><td>Imprime um valor no terminal com quebra de linha</td></tr>
+          <tr><td><code>lerTexto()</code></td><td>Le uma linha de texto do usuario</td></tr>
+          <tr><td><code>lerNumero()</code></td><td>Le um numero do usuario</td></tr>
+          <tr><td><code>relogio()</code></td><td>Retorna timestamp em segundos (para benchmark)</td></tr>
         </tbody>
       </table>
 
@@ -399,19 +381,17 @@ decimal peso = lerDecimal()</code></pre>
     }
 }</code></pre>
 
-      <!-- TRANSPILACAO -->
-      <h2 id="transpilacao">Transpilacao</h2>
-      <p>O comando <code>brz compilar</code> gera codigo na linguagem escolhida:</p>
-      <pre><code>$ brz compilar programa.brz --para java
-$ brz compilar programa.brz --para python
-$ brz compilar programa.brz --para c
-$ brz compilar programa.brz --para cpp</code></pre>
+      <!-- EXECUCAO -->
+      <h2 id="execucao">Execucao</h2>
+      <p>Para executar um arquivo BRZ:</p>
+      <pre><code>$ brz programa.brz</code></pre>
 
-      <p>O flag <code>--para</code> aceita os valores <code>java</code>, <code>python</code> (ou <code>py</code>), <code>c</code> e <code>cpp</code>. Se omitido, o padrao e <code>java</code>.</p>
+      <p>Para executar codigo inline:</p>
+      <pre><code>$ brz -c 'mostrar(42 * 2)'</code></pre>
 
-      <p>Para executar diretamente sem gerar arquivo intermediario:</p>
-      <pre><code>$ brz rodar programa.brz</code></pre>
-      <p>Isso transpila para Java, compila com <code>javac</code>, executa e limpa os arquivos temporarios automaticamente.</p>
+      <p>Para abrir o REPL interativo:</p>
+      <pre><code>$ brz</code></pre>
+      <p>A VM compila o codigo para bytecode internamente e executa diretamente. Nao ha arquivos intermediarios nem dependencias externas.</p>
 
     </main>
   </div>
